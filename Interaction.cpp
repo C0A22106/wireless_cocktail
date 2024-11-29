@@ -8,6 +8,9 @@
 #include "WirelessMotionDlg.h"
 #include "afxdialogex.h"
 #include "cstdlib"
+#include "random"
+#include "string"
+#include "vector"
 
 // MFC管理下にないグローバル変数への参照
 extern int rf_status; // ワイヤレス通信の実行状況を表す変数　0 ... 実行なし	1 ... 実行あり
@@ -48,6 +51,41 @@ double AATL = 0;
 double BPM = 0;
 clock_t start_time, end_time;
 
+// ランダムピック
+std::string RandomPick(int shakeCount)
+{
+	// テーブル定義
+	std::vector<std::vector<std::string>> tables = {
+		{"カクテル", "ワイン", "ビール", "ウイスキー", "焼酎", "日本酒", "リキュール", "ノンアルコール"}, // テーブル1
+		{"イタリアン", "フレンチ", "和食", "中華", "韓国料理", "タイ料理", "インド料理", "アメリカン"},   // テーブル2
+		{"ステーキ", "寿司", "ラーメン", "カレー", "パスタ", "ピザ", "ハンバーガー", "お好み焼き"}       // テーブル3
+	};
+
+	// テーブル選択ロジック
+	std::vector<std::string> selectedTable;
+	if (shakeCount <= 3) {
+		selectedTable = tables[0];
+	}
+	else if (shakeCount <= 6) {
+		selectedTable = tables[1];
+	}
+	else {
+		selectedTable = tables[2];
+	}
+
+	// ランダムでアイテムを選択
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<> dis(0, selectedTable.size() - 1);
+	std::string randomItem = selectedTable[dis(gen)];
+
+	return randomItem;
+}
+
+std::string randomresult = RandomPick(3);
+
+
+
 extern double bpm_buf[2][MAXDATASIZE];
 
 // 手入力で追記したグラフ描画用メッセージハンドラー
@@ -74,7 +112,6 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	int start;	// 描画を開始するサンプル番号、描画するサンプル数
 	int plot_count;	// グラフにプロットする点の数
 	double xgain, ygain; // グラフ描画における拡大・縮小係数
-
 	if (rf_status == 1) {
 		start = datasize - graphspan;
 		if (start < 0) {
@@ -84,7 +121,7 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	else {
 		start = datapoint; // 描画開始サンプル番号
 	}
-
+	
 	plot_count = graphspan; // 描画領域の全幅に相当するサンプル数（実際のデータサンプル数ではない）
 
 	if((start + plot_count) > datasize){
@@ -227,7 +264,6 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 		s.Format(_T("Sample Count = %d"), start);
 	}
 	msgED.SetWindowTextW(s);
-
 	DeleteDC(myDC); // メモリバッファのデバイスコンテキストを解放する
 	DeleteObject(memBM); // 画像メモリの性質を表すビットマップを解放する
 
@@ -240,6 +276,7 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	CString mes_swing;
 	CString mes_wrist;
 	CString mes_result;
+	CString mes_random;
 	val = databuf[4][start];
 
 	AATL += abs(databuf[16][start]);
@@ -274,6 +311,7 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 		sample_count = 0;
 	}
 	
+
 	//前腕姿勢角ｙの値から振り速度を求める
 	//dirが0の時振り下ろし方向、1の時振り上げ方向
 	if (dir == 0) {
@@ -318,8 +356,10 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 
 	mes_swing.Format(_T("平均時間: %lf s\r\nスコア: %lf"), swing_average * 32.0, swing_score);
 	mes_wrist.Format(_T("角度平均: %lf 度\r\nスコア: %lf"), theta_average, theta_score);
-	mes_result.Format(_T("総合スコア: %lf\r\nBPM: %lf\r\nbpm: %lf"), whole_score, bpm_buf[0][start], BPM);
-	msgED2.SetWindowTextW(mes_wrist);
+    mes_result.Format(_T("総合スコア: %lf\r\nBPM: %lf\r\nbpm: %lf %%\r\n"), whole_score, bpm_buf[0][start], BPM);
+	mes_random.Format(_T("おすすめ: %s"), randomresult.c_str());
+
+    msgED2.SetWindowTextW(mes_wrist);
 	msgED3.SetWindowTextW(mes_swing);
 	msgED4.SetWindowTextW(mes_result);
 
