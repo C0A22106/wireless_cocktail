@@ -40,15 +40,57 @@ int period = 0;
 double val;
 int peak_timing = -1;
 double peak_val = 0.0;
-int stop_count;
+int stop_count = 0;
 double sum_swing_speed = 0;
 double sum_theta_dif = 0;
 int sample_count = 0;
 double AATL = 0;
 double BPM = 0;
 clock_t start_time, end_time;
+BOOLEAN shaking, pour, stop = FALSE;
 
 extern double bpm_buf[2][MAXDATASIZE];
+
+// Δ追記
+
+// 画面モードを管理する構造体
+enum Mode
+{
+	idol, // 待機画面（振る前）
+	shake, // ゲーム中（振っている）
+	finish, // 終了（カクテルを注ぐ画面）
+	result // 結果発表
+};
+
+Mode mode = idol;
+
+// 振り始めた事を判定する関数
+void start_shake(int time)
+{
+	if (databuf[16][time] >= 2000)
+	{
+		shaking = TRUE;
+	}
+}
+
+// Δここまで
+
+//注いでいることを判定する独自関数
+void jud_pour(int time) {
+	if ((stop_count >= 20) && (databuf[12][time] >= 120.0) && (databuf[12][time] <= 180.0)) {
+		pour = TRUE;
+	}
+}
+
+//止まっているときstop_countを1加算する
+void jud_stop(int time) {
+	if (databuf[16][time] <= 2000) {
+		stop_count++;
+	}
+	else {
+		stop_count = 0;
+	}
+}
 
 // 手入力で追記したグラフ描画用メッセージハンドラー
 
@@ -133,6 +175,30 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 			myDC.LineTo(xx, yy);	// ペンを座標 ( xx, yy)に移動させながら線を引く
 		}
 	}
+
+	// Δ追記
+	// 画面描画
+	// 上のグラフ描画は削除またはコメントアウト
+	switch (mode)
+	{
+		// 振る前の画面
+		case idol:
+			break;
+
+		// 振っている時の画面
+		case shake:
+			break;
+
+		// 注ぐ画面
+		case finish:
+			break;
+
+		// 結果の画面
+		case result:
+			break;
+	}
+
+	// Δここまで
 
 	// グラフの描画はここまで
 
@@ -273,6 +339,36 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 		sum_theta_dif = 0;
 		sample_count = 0;
 	}
+
+	//一定時間以上止まっているときパラメータをリセット
+	if (stop_count >= 20) {
+		dir = 0;
+		period = 0;
+		peak_timing = -1;
+		peak_val = 0.0;
+		sum_swing_speed = 0;
+		sum_theta_dif = 0;
+		sample_count = 0;
+	}
+
+	//注ぐ姿勢で一定時間止まっているとき注ぐフラグを立てる
+	jud_pour(start);
+
+	// Δ追記
+	// 振り始めたら振っているフラグを立てる
+	start_shake(start);
+
+	if (shaking == TRUE && mode == idol)
+	{
+		mode = shake; // ゲーム開始から振り始めた画面へ
+	}
+
+	if (pour == TRUE && mode == shake)
+	{
+		mode = finish; // 振っている状態からリザルト画面へ
+	}
+
+	// Δここまで
 	
 	//前腕姿勢角ｙの値から振り速度を求める
 	//dirが0の時振り下ろし方向、1の時振り上げ方向
@@ -316,9 +412,34 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	double theta_score = (theta_average - 10) * 10;
 	double whole_score = swing_score + theta_score;
 
+	// Δ追記
+	// 画面モードをエディットボックスに表示
+	switch (mode)
+	{
+	case idol:
+		s.Format(_T("Screem Mode idol"));
+		break;
+
+	case shake:
+		s.Format(_T("Screem Mode shake"));
+		break;
+
+	case finish:
+		s.Format(_T("Screem Mode finish"));
+		break;
+
+	case result:
+		s.Format(_T("Screem Mode result"));
+		break;
+	}
+
+	msgED.SetWindowTextW(s);
+
+	// Δここまで
+
 	mes_swing.Format(_T("平均時間: %lf s\r\nスコア: %lf"), swing_average * 32.0, swing_score);
 	mes_wrist.Format(_T("角度平均: %lf 度\r\nスコア: %lf"), theta_average, theta_score);
-	mes_result.Format(_T("総合スコア: %lf\r\nBPM: %lf\r\nbpm: %lf"), whole_score, bpm_buf[0][start], BPM);
+	mes_result.Format(_T("総合スコア: %lf\r\nBPM: %lf\r\npour: %d"), whole_score, bpm_buf[0][start], pour);
 	msgED2.SetWindowTextW(mes_wrist);
 	msgED3.SetWindowTextW(mes_swing);
 	msgED4.SetWindowTextW(mes_result);
