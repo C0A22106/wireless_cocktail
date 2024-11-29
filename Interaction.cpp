@@ -47,8 +47,26 @@ int sample_count = 0;
 double AATL = 0;
 double BPM = 0;
 clock_t start_time, end_time;
+BOOLEAN pour, stop = FALSE;
 
 extern double bpm_buf[2][MAXDATASIZE];
+
+//注いでいることを判定する独自関数
+void jud_pour(int time) {
+	if ((stop_count >= 20) && (databuf[12][time] >= 120.0) && (databuf[12][time] <= 180.0)) {
+		pour = TRUE;
+	}
+}
+
+//止まっているときstop_countを1加算する
+void jud_stop(int time) {
+	if (databuf[16][time] <= 2000) {
+		stop_count++;
+	}
+	else {
+		stop_count = 0;
+	}
+}
 
 // 手入力で追記したグラフ描画用メッセージハンドラー
 
@@ -244,13 +262,6 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 
 	AATL += abs(databuf[16][start]);
 
-	if (databuf[16][start] <= 2000) {
-		stop_count++;
-	}
-	else {
-		stop_count = 0;
-	}
-
 	//1時間単位前の手首ひねり角との差の絶対値をsum_data_difに加算する
 	double wrist_def;
 	wrist_def = databuf[12][start] - databuf[12][start - 1];
@@ -261,9 +272,12 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 		sum_theta_dif += wrist_def;
 	}
 
-
 	sample_count++;
 
+	//停止していることを判定
+	jud_stop(start);
+
+	//一定時間以上止まっているときパラメータをリセット
 	if (stop_count >= 20) {
 		dir = 0;
 		period = 0;
@@ -273,6 +287,9 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 		sum_theta_dif = 0;
 		sample_count = 0;
 	}
+
+	//注ぐ姿勢で一定時間止まっているとき注ぐフラグを立てる
+	jud_pour(start);
 	
 	//前腕姿勢角ｙの値から振り速度を求める
 	//dirが0の時振り下ろし方向、1の時振り上げ方向
@@ -318,7 +335,7 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 
 	mes_swing.Format(_T("平均時間: %lf s\r\nスコア: %lf"), swing_average * 32.0, swing_score);
 	mes_wrist.Format(_T("角度平均: %lf 度\r\nスコア: %lf"), theta_average, theta_score);
-	mes_result.Format(_T("総合スコア: %lf\r\nBPM: %lf\r\nbpm: %lf"), whole_score, bpm_buf[0][start], BPM);
+	mes_result.Format(_T("総合スコア: %lf\r\nBPM: %lf\r\npour: %d"), whole_score, bpm_buf[0][start], pour);
 	msgED2.SetWindowTextW(mes_wrist);
 	msgED3.SetWindowTextW(mes_swing);
 	msgED4.SetWindowTextW(mes_result);
