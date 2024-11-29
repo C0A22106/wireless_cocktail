@@ -58,4 +58,6 @@ public:
 	CEdit msgED2;
 	CEdit msgED3;
 	CEdit msgED4;
+	afx_msg void OnEnChangeEdit1();
+	afx_msg void OnEnChangeEdit5();
 };

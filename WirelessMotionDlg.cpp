@@ -700,6 +700,8 @@ BEGIN_MESSAGE_MAP(CWirelessMotionDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON6, &CWirelessMotionDlg::OnBnClickedButton6)
 	ON_BN_CLICKED(IDC_BUTTON7, &CWirelessMotionDlg::OnBnClickedButton7)
 	ON_WM_TIMER()
+	ON_EN_CHANGE(IDC_EDIT1, &CWirelessMotionDlg::OnEnChangeEdit1)
+	ON_EN_CHANGE(IDC_EDIT5, &CWirelessMotionDlg::OnEnChangeEdit5)
 END_MESSAGE_MAP()
 
 
@@ -1242,4 +1244,26 @@ void CWirelessMotionDlg::OnTimer(UINT_PTR nIDEvent)
 	}
 
 	CDialogEx::OnTimer(nIDEvent); // Visual Studioで自動的に生成されているコード
+}
+
+
+void CWirelessMotionDlg::OnEnChangeEdit1()
+{
+	// TODO: これが RICHEDIT コントロールの場合、このコントロールが
+	// この通知を送信するには、CDialogEx::OnInitDialog() 関数をオーバーライドし、
+	// CRichEditCtrl().SetEventMask() を関数し呼び出します。
+	// OR 状態の ENM_CHANGE フラグをマスクに入れて呼び出す必要があります。
+
+	// TODO: ここにコントロール通知ハンドラー コードを追加してください。
+}
+
+
+void CWirelessMotionDlg::OnEnChangeEdit5()
+{
+	// TODO: これが RICHEDIT コントロールの場合、このコントロールが
+	// この通知を送信するには、CDialogEx::OnInitDialog() 関数をオーバーライドし、
+	// CRichEditCtrl().SetEventMask() を関数し呼び出します。
+	// OR 状態の ENM_CHANGE フラグをマスクに入れて呼び出す必要があります。
+
+	// TODO: ここにコントロール通知ハンドラー コードを追加してください。
 }
