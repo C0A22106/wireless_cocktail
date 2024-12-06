@@ -1,6 +1,6 @@
-// Interaction.cpp : ŽÀ‘•ƒtƒ@ƒCƒ‹
-// Interaction.cpp : ŽÀ‘•ƒtƒ@ƒCƒ‹
-// ƒOƒ‰ƒtƒBƒbƒNƒX•`‰æ•”•ª‚ð’Šo‚µ‚½ŠJ”­—pƒR[ƒh
+// Interaction.cpp : å®Ÿè£…ãƒ•ã‚¡ã‚¤ãƒ«
+// Interaction.cpp : å®Ÿè£…ãƒ•ã‚¡ã‚¤ãƒ«
+// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚¹æç”»éƒ¨åˆ†ã‚’æŠ½å‡ºã—ãŸé–‹ç™ºç”¨ã‚³ãƒ¼ãƒ‰
 
 #include "pch.h"
 #include "framework.h"
@@ -12,32 +12,32 @@
 #include "string"
 #include "vector"
 
-// MFCŠÇ—‰º‚É‚È‚¢ƒOƒ[ƒoƒ‹•Ï”‚Ö‚ÌŽQÆ
-extern int rf_status; // ƒƒCƒ„ƒŒƒX’ÊM‚ÌŽÀsó‹µ‚ð•\‚·•Ï”@0 ... ŽÀs‚È‚µ	1 ... ŽÀs‚ ‚è
-extern int rf_firsttime; // ƒpƒPƒbƒgƒGƒ‰[‚ÌŒv”ŠJŽnŽž‚Ì‚Ý1‚É‚È‚éƒtƒ‰ƒt
-extern int rf_errcnt; // ƒƒCƒ„ƒŒƒX’ÊM‚É‚¨‚¯‚éƒpƒPƒbƒgƒGƒ‰[‚Ì—ÝŒv”
-extern int rf_interlock; // •`‰æŽžŠÔ‚ª’·‚¢Û‚ÉƒƒCƒ„ƒŒƒX’ÊMƒXƒŒƒbƒh‚ð—DæŽÀs‚·‚é‚½‚ß‚Ìƒtƒ‰ƒO
+// MFCç®¡ç†ä¸‹ã«ãªã„ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã¸ã®å‚ç…§
+extern int rf_status; // ãƒ¯ã‚¤ãƒ¤ãƒ¬ã‚¹é€šä¿¡ã®å®Ÿè¡ŒçŠ¶æ³ã‚’è¡¨ã™å¤‰æ•°ã€€0 ... å®Ÿè¡Œãªã—	1 ... å®Ÿè¡Œã‚ã‚Š
+extern int rf_firsttime; // ãƒ‘ã‚±ãƒƒãƒˆã‚¨ãƒ©ãƒ¼ã®è¨ˆæ•°é–‹å§‹æ™‚ã®ã¿1ã«ãªã‚‹ãƒ•ãƒ©ãƒ•
+extern int rf_errcnt; // ãƒ¯ã‚¤ãƒ¤ãƒ¬ã‚¹é€šä¿¡ã«ãŠã‘ã‚‹ãƒ‘ã‚±ãƒƒãƒˆã‚¨ãƒ©ãƒ¼ã®ç´¯è¨ˆæ•°
+extern int rf_interlock; // æç”»æ™‚é–“ãŒé•·ã„éš›ã«ãƒ¯ã‚¤ãƒ¤ãƒ¬ã‚¹é€šä¿¡ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’å„ªå…ˆå®Ÿè¡Œã™ã‚‹ãŸã‚ã®ãƒ•ãƒ©ã‚°
 
-#define GRAPH_Y_RANGE 4000.0					// ƒOƒ‰ƒtYŽ²‚Ì”’l•
-#define GRAPH_Y_OFFSET (GRAPH_Y_RANGE*0.5)		// ƒf[ƒ^‚Ì’l‚ªƒ[ƒ‚ÌŽž‚ÌYŽ²’liƒIƒtƒZƒbƒg’lj
+#define GRAPH_Y_RANGE 4000.0					// ã‚°ãƒ©ãƒ•Yè»¸ã®æ•°å€¤å¹…
+#define GRAPH_Y_OFFSET (GRAPH_Y_RANGE*0.5)		// ãƒ‡ãƒ¼ã‚¿ã®å€¤ãŒã‚¼ãƒ­ã®æ™‚ã®Yè»¸å€¤ï¼ˆã‚ªãƒ•ã‚»ãƒƒãƒˆå€¤ï¼‰
 #define PHI_RANGE 360.0
 #define THETA_RANGE 180.0
 #define PHI_OFFSET (PHI_RANGE*0.5)
 #define THETA_OFFSET (THETA_RANGE*0.5)
 
-// ƒ‚[ƒVƒ‡ƒ“ƒf[ƒ^‚Ì“à—e
-extern double databuf[DATASORT][MAXDATASIZE];		// ƒOƒ[ƒoƒ‹•Ï””z—ñ‚ÉƒZƒ“ƒTƒf[ƒ^‚ðŠi”[‚·‚é
+// ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ãƒ‡ãƒ¼ã‚¿ã®å†…å®¹
+extern double databuf[DATASORT][MAXDATASIZE];		// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°é…åˆ—ã«ã‚»ãƒ³ã‚µãƒ‡ãƒ¼ã‚¿ã‚’æ ¼ç´ã™ã‚‹
 // 0 ... seq
-// 1, 2, 3 ... ax, ay, az ‚RŽ²‰Á‘¬“x(G)
-// 4, 5, 6 ... wx, wy, wz ‚RŽ²Šp‘¬“x(dps)
-// 7, 8, 9 ... e4x, e4y, e4z d—ÍŽp¨ŠpƒxƒNƒgƒ‹idirection cosineŒ`Ž®)
-// 10 ... alpha (M—Š“xŒW”, 0‚©‚ç1‚Ü‚Å‚Ì•‚“®¬”“_”’lj
-// 11, 12 ... ‘O˜rŒXŽÎŠpƒÆ, ‘O˜r‚Ð‚Ë‚èŠpƒÓideg)
-// 13, 14, 15 ... jx, jy, jz ‚RŽ²‰Á‰Á‘¬“xijerk) (”CˆÓ’PˆÊj
-// 16, 17, 18 ... ajx, ajy, ajz ‚RŽ²Šp‰Á‰Á‘¬“xiangular jerk) (”CˆÓ’PˆÊ)
+// 1, 2, 3 ... ax, ay, az ï¼“è»¸åŠ é€Ÿåº¦(G)
+// 4, 5, 6 ... wx, wy, wz ï¼“è»¸è§’é€Ÿåº¦(dps)
+// 7, 8, 9 ... e4x, e4y, e4z é‡åŠ›å§¿å‹¢è§’ãƒ™ã‚¯ãƒˆãƒ«ï¼ˆdirection cosineå½¢å¼)
+// 10 ... alpha (ä¿¡é ¼åº¦ä¿‚æ•°, 0ã‹ã‚‰1ã¾ã§ã®æµ®å‹•å°æ•°ç‚¹æ•°å€¤ï¼‰
+// 11, 12 ... å‰è…•å‚¾æ–œè§’Î¸, å‰è…•ã²ã­ã‚Šè§’Ï†ï¼ˆdeg)
+// 13, 14, 15 ... jx, jy, jz ï¼“è»¸åŠ åŠ é€Ÿåº¦ï¼ˆjerk) (ä»»æ„å˜ä½ï¼‰
+// 16, 17, 18 ... ajx, ajy, ajz ï¼“è»¸è§’åŠ åŠ é€Ÿåº¦ï¼ˆangular jerk) (ä»»æ„å˜ä½)
 extern int datasize;
 
-//ƒIƒŠƒWƒiƒ‹•Ï”‰Šú‰»
+//ã‚ªãƒªã‚¸ãƒŠãƒ«å¤‰æ•°åˆæœŸåŒ–
 int dir = 0;
 int period = 0;
 double val;
@@ -52,17 +52,17 @@ double BPM = 0;
 clock_t start_time, end_time;
 BOOLEAN pour, stop = FALSE;
 
-// ƒ‰ƒ“ƒ_ƒ€ƒsƒbƒN
+// ãƒ©ãƒ³ãƒ€ãƒ ãƒ”ãƒƒã‚¯
 std::string RandomPick(int shakeCount)
 {
-	// ƒe[ƒuƒ‹’è‹`
+	// ãƒ†ãƒ¼ãƒ–ãƒ«å®šç¾©
 	std::vector<std::vector<std::string>> tables = {
-		{"ƒJƒNƒeƒ‹", "ƒƒCƒ“", "ƒr[ƒ‹", "ƒEƒCƒXƒL[", "Ä’‘", "“ú–{Žð", "ƒŠƒLƒ…[ƒ‹", "ƒmƒ“ƒAƒ‹ƒR[ƒ‹"}, // ƒe[ƒuƒ‹1
-		{"ƒCƒ^ƒŠƒAƒ“", "ƒtƒŒƒ“ƒ`", "˜aH", "’†‰Ø", "ŠØ‘—¿—", "ƒ^ƒC—¿—", "ƒCƒ“ƒh—¿—", "ƒAƒƒŠƒJƒ“"},   // ƒe[ƒuƒ‹2
-		{"ƒXƒe[ƒL", "ŽõŽi", "ƒ‰[ƒƒ“", "ƒJƒŒ[", "ƒpƒXƒ^", "ƒsƒU", "ƒnƒ“ƒo[ƒK[", "‚¨D‚ÝÄ‚«"}       // ƒe[ƒuƒ‹3
+		{"ã‚«ã‚¯ãƒ†ãƒ«", "ãƒ¯ã‚¤ãƒ³", "ãƒ“ãƒ¼ãƒ«", "ã‚¦ã‚¤ã‚¹ã‚­ãƒ¼", "ç„¼é…Ž", "æ—¥æœ¬é…’", "ãƒªã‚­ãƒ¥ãƒ¼ãƒ«", "ãƒŽãƒ³ã‚¢ãƒ«ã‚³ãƒ¼ãƒ«"}, // ãƒ†ãƒ¼ãƒ–ãƒ«1
+		{"ã‚¤ã‚¿ãƒªã‚¢ãƒ³", "ãƒ•ãƒ¬ãƒ³ãƒ", "å’Œé£Ÿ", "ä¸­è¯", "éŸ“å›½æ–™ç†", "ã‚¿ã‚¤æ–™ç†", "ã‚¤ãƒ³ãƒ‰æ–™ç†", "ã‚¢ãƒ¡ãƒªã‚«ãƒ³"},   // ãƒ†ãƒ¼ãƒ–ãƒ«2
+		{"ã‚¹ãƒ†ãƒ¼ã‚­", "å¯¿å¸", "ãƒ©ãƒ¼ãƒ¡ãƒ³", "ã‚«ãƒ¬ãƒ¼", "ãƒ‘ã‚¹ã‚¿", "ãƒ”ã‚¶", "ãƒãƒ³ãƒãƒ¼ã‚¬ãƒ¼", "ãŠå¥½ã¿ç„¼ã"}       // ãƒ†ãƒ¼ãƒ–ãƒ«3
 	};
 
-	// ƒe[ƒuƒ‹‘I‘ðƒƒWƒbƒN
+	// ãƒ†ãƒ¼ãƒ–ãƒ«é¸æŠžãƒ­ã‚¸ãƒƒã‚¯
 	std::vector<std::string> selectedTable;
 	if (shakeCount <= 3) {
 		selectedTable = tables[0];
@@ -74,7 +74,7 @@ std::string RandomPick(int shakeCount)
 		selectedTable = tables[2];
 	}
 
-	// ƒ‰ƒ“ƒ_ƒ€‚ÅƒAƒCƒeƒ€‚ð‘I‘ð
+	// ãƒ©ãƒ³ãƒ€ãƒ ã§ã‚¢ã‚¤ãƒ†ãƒ ã‚’é¸æŠž
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<> dis(0, selectedTable.size() - 1);
@@ -89,14 +89,14 @@ std::string randomresult = RandomPick(3);
 
 extern double bpm_buf[2][MAXDATASIZE];
 
-//’‚¢‚Å‚¢‚é‚±‚Æ‚ð”»’è‚·‚é“ÆŽ©ŠÖ”
+//ï¿½ï¿½ï¿½ï¿½ï¿½Å‚ï¿½ï¿½é‚±ï¿½Æ‚ð”»’è‚·ï¿½ï¿½ÆŽï¿½ï¿½Öï¿½
 void jud_pour(int time) {
 	if ((stop_count >= 20) && (databuf[12][time] >= 120.0) && (databuf[12][time] <= 180.0)) {
 		pour = TRUE;
 	}
 }
 
-//Ž~‚Ü‚Á‚Ä‚¢‚é‚Æ‚«stop_count‚ð1‰ÁŽZ‚·‚é
+//ï¿½~ï¿½Ü‚ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½Æ‚ï¿½stop_countï¿½ï¿½1ï¿½ï¿½ï¿½Zï¿½ï¿½ï¿½ï¿½
 void jud_stop(int time) {
 	if (databuf[16][time] <= 2000) {
 		stop_count++;
@@ -106,20 +106,20 @@ void jud_stop(int time) {
 	}
 }
 
-// Žè“ü—Í‚Å’Ç‹L‚µ‚½ƒOƒ‰ƒt•`‰æ—pƒƒbƒZ[ƒWƒnƒ“ƒhƒ‰[
+// ï¿½ï¿½ï¿½ï¿½Í‚Å’Ç‹Lï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½tï¿½`ï¿½ï¿½pï¿½ï¿½ï¿½bï¿½Zï¿½[ï¿½Wï¿½nï¿½ï¿½ï¿½hï¿½ï¿½ï¿½[
 
-// ‰æ–Êƒ‚[ƒh‚ðŠÇ—‚·‚é\‘¢‘Ì
+// ï¿½ï¿½Êƒï¿½ï¿½[ï¿½hï¿½ï¿½ï¿½Ç—ï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½
 enum Mode
 {
-	idol, // ‘Ò‹@‰æ–ÊiU‚é‘Oj
-	shake, // ƒQ[ƒ€’†iU‚Á‚Ä‚¢‚éj
-	finish, // I—¹iƒJƒNƒeƒ‹‚ð’‚®‰æ–Êj
-	result // Œ‹‰Ê”­•\
+	idol, // ï¿½Ò‹@ï¿½ï¿½Êiï¿½Uï¿½ï¿½Oï¿½j
+	shake, // ï¿½Qï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½Uï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½j
+	finish, // ï¿½Iï¿½ï¿½ï¿½iï¿½Jï¿½Nï¿½eï¿½ï¿½ï¿½ð’‚ï¿½ï¿½ï¿½Êj
+	result // ï¿½ï¿½ï¿½Ê”ï¿½ï¿½\
 };
 
 Mode mode = idol;
 
-// U‚èŽn‚ß‚½Ž–‚ð”»’è‚·‚éŠÖ”
+// ï¿½Uï¿½ï¿½nï¿½ß‚ï¿½ï¿½ï¿½ï¿½ð”»’è‚·ï¿½ï¿½Öï¿½
 void start_shake(int time)
 {
 	if (databuf[16][time] >= 2000)
@@ -128,16 +128,16 @@ void start_shake(int time)
 	}
 }
 
-// ƒ¢‚±‚±‚Ü‚Å
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½
 
-//’‚¢‚Å‚¢‚é‚±‚Æ‚ð”»’è‚·‚é“ÆŽ©ŠÖ”
+//æ³¨ã„ã§ã„ã‚‹ã“ã¨ã‚’åˆ¤å®šã™ã‚‹ç‹¬è‡ªé–¢æ•°
 void jud_pour(int time) {
 	if ((stop_count >= 20) && (databuf[12][time] >= 120.0) && (databuf[12][time] <= 180.0)) {
 		pour = TRUE;
 	}
 }
 
-//Ž~‚Ü‚Á‚Ä‚¢‚é‚Æ‚«stop_count‚ð1‰ÁŽZ‚·‚é
+//æ­¢ã¾ã£ã¦ã„ã‚‹ã¨ãstop_countã‚’1åŠ ç®—ã™ã‚‹
 void jud_stop(int time) {
 	if (databuf[16][time] <= 2000) {
 		stop_count++;
@@ -147,31 +147,30 @@ void jud_stop(int time) {
 	}
 }
 
-// Žè“ü—Í‚Å’Ç‹L‚µ‚½ƒOƒ‰ƒt•`‰æ—pƒƒbƒZ[ƒWƒnƒ“ƒhƒ‰[
+// æ‰‹å…¥åŠ›ã§è¿½è¨˜ã—ãŸã‚°ãƒ©ãƒ•æç”»ç”¨ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒãƒ³ãƒ‰ãƒ©ãƒ¼
 
 LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
-// ŠO•”‚©‚ç‚ÌƒƒbƒZ[ƒW‚Å‹N“®‚·‚é‰æ–Ê•`‰æƒR[ƒh
-// MFC‚ÌŠÇ—‰º‚É‚ ‚é‚½‚ßAGDIƒOƒ‰ƒtƒBƒbƒNƒX“™‚ªŽg—p‚Å‚«‚é
-// WPARAM‚ÆLPARAM‚ÍŽÀÛ‚É‚Í®”Œ^•Ï”‚Å‚ ‚èAƒƒbƒZ[ƒW‚ð”­M‚·‚é‘¤‚Å’l‚ðƒZƒbƒg‚·‚é
+// å¤–éƒ¨ã‹ã‚‰ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã§èµ·å‹•ã™ã‚‹ç”»é¢æç”»ã‚³ãƒ¼ãƒ‰
+// MFCã®ç®¡ç†ä¸‹ã«ã‚ã‚‹ãŸã‚ã€GDIã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚¹ç­‰ãŒä½¿ç”¨ã§ãã‚‹
+// WPARAMã¨LPARAMã¯å®Ÿéš›ã«ã¯æ•´æ•°åž‹å¤‰æ•°ã§ã‚ã‚Šã€ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’ç™ºä¿¡ã™ã‚‹å´ã§å€¤ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 {
-	// ƒOƒ‰ƒt•`‰æ
-	// ƒŠƒ\[ƒXƒrƒ…[‚©‚çƒsƒNƒ`ƒƒ[ƒ{ƒbƒNƒX‚ðì‚èAID‚ðIDC_PICT1‚Æ‚¢‚Á‚½–¼‘O‚É•ÏX‚·‚é
-	// ƒsƒNƒ`ƒƒ[ƒ{ƒbƒNƒX‚É•Ï”‚ð’Ç‰Á‚µAmPICT1‚Æ‚¢‚Á‚½–¼‘O‚ð‚Â‚¯‚éim:ƒƒ“ƒo[•Ï”‚ÌˆÓ–¡j
-	// ‰Ÿ‚µƒ{ƒ^ƒ“‚É‘Î‰ž‚·‚éƒnƒ“ƒhƒ‰[‚Æ‚µ‚ÄAˆÈ‰º‚ÉƒOƒ‰ƒt•`‰æƒR[ƒh‚ð‘‚­
+	// ã‚°ãƒ©ãƒ•æç”»
+	// ãƒªã‚½ãƒ¼ã‚¹ãƒ“ãƒ¥ãƒ¼ã‹ã‚‰ãƒ”ã‚¯ãƒãƒ£ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚’ä½œã‚Šã€IDã‚’IDC_PICT1ã¨ã„ã£ãŸåå‰ã«å¤‰æ›´ã™ã‚‹
+	// ãƒ”ã‚¯ãƒãƒ£ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã«å¤‰æ•°ã‚’è¿½åŠ ã—ã€mPICT1ã¨ã„ã£ãŸåå‰ã‚’ã¤ã‘ã‚‹ï¼ˆm:ãƒ¡ãƒ³ãƒãƒ¼å¤‰æ•°ã®æ„å‘³ï¼‰
+	// æŠ¼ã—ãƒœã‚¿ãƒ³ã«å¯¾å¿œã™ã‚‹ãƒãƒ³ãƒ‰ãƒ©ãƒ¼ã¨ã—ã¦ã€ä»¥ä¸‹ã«ã‚°ãƒ©ãƒ•æç”»ã‚³ãƒ¼ãƒ‰ã‚’æ›¸ã
 
-	// ‚±‚êˆÈ~‚ÍGDIƒOƒ‰ƒtƒBƒbƒNƒX‚É‚æ‚éƒOƒ‰ƒt•`‰æƒR[ƒh‚ð‚Ù‚Ú‚»‚Ì‚Ü‚Ü‹LÚ‚µ‚Ä‚¢‚é
+	// ã“ã‚Œä»¥é™ã¯GDIã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚¹ã«ã‚ˆã‚‹ã‚°ãƒ©ãƒ•æç”»ã‚³ãƒ¼ãƒ‰ã‚’ã»ã¼ãã®ã¾ã¾è¨˜è¼‰ã—ã¦ã„ã‚‹
 
-	// Šî–{“I‚ÈGDIƒOƒ‰ƒtƒBƒbƒNƒX‚Ì•`‰æ‚ðƒoƒbƒtƒ@ƒƒ‚ƒŠ‚ðŽg‚Á‚Äs‚¤
-	CClientDC myPictDC(&mPICT1); // Picture Control‚ÉÝ’è‚µ‚½•Ï”imPICT1j‚©‚ç•`‰æ—pƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚ðì‚é
-	CRect myRect; // Žl•ÓŒ`‚ÌƒTƒCƒY‚ð•\Œ»‚·‚é‚½‚ß‚Ì\‘¢‘Ì
-	CDC myDC; // •`‰æƒoƒbƒtƒ@ƒƒ‚ƒŠ—p‚ÌƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg
+	// åŸºæœ¬çš„ãªGDIã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚¹ã®æç”»ã‚’ãƒãƒƒãƒ•ã‚¡ãƒ¡ãƒ¢ãƒªã‚’ä½¿ã£ã¦è¡Œã†
+	CClientDC myPictDC(&mPICT1); // Picture Controlã«è¨­å®šã—ãŸå¤‰æ•°ï¼ˆmPICT1ï¼‰ã‹ã‚‰æç”»ç”¨ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’ä½œã‚‹
+	CRect myRect; // å››è¾ºå½¢ã®ã‚µã‚¤ã‚ºã‚’è¡¨ç¾ã™ã‚‹ãŸã‚ã®æ§‹é€ ä½“
+	CDC myDC; // æç”»ãƒãƒƒãƒ•ã‚¡ãƒ¡ãƒ¢ãƒªç”¨ã®ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆ
 	int xsize, ysize;
-	CString s; // •`‰æó‹µ‚ðƒeƒLƒXƒg•\Ž¦‚·‚é‚½‚ß‚Ì•¶Žš—ñ•Ï”
+	CString s; // æç”»çŠ¶æ³ã‚’ãƒ†ã‚­ã‚¹ãƒˆè¡¨ç¤ºã™ã‚‹ãŸã‚ã®æ–‡å­—åˆ—å¤‰æ•°
 
-	int start;	// •`‰æ‚ðŠJŽn‚·‚éƒTƒ“ƒvƒ‹”Ô†A•`‰æ‚·‚éƒTƒ“ƒvƒ‹”
-	int plot_count;	// ƒOƒ‰ƒt‚Éƒvƒƒbƒg‚·‚é“_‚Ì”
-	double xgain, ygain; // ƒOƒ‰ƒt•`‰æ‚É‚¨‚¯‚éŠg‘åEk¬ŒW”
-
+	int start;	// æç”»ã‚’é–‹å§‹ã™ã‚‹ã‚µãƒ³ãƒ—ãƒ«ç•ªå·ã€æç”»ã™ã‚‹ã‚µãƒ³ãƒ—ãƒ«æ•°
+	int plot_count;	// ã‚°ãƒ©ãƒ•ã«ãƒ—ãƒ­ãƒƒãƒˆã™ã‚‹ç‚¹ã®æ•°
+	double xgain, ygain; // ã‚°ãƒ©ãƒ•æç”»ã«ãŠã‘ã‚‹æ‹¡å¤§ãƒ»ç¸®å°ä¿‚æ•°
 	if (rf_status == 1) {
 		start = datasize - graphspan;
 		if (start < 0) {
@@ -179,100 +178,103 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 		}
 	}
 	else {
-		start = datapoint; // •`‰æŠJŽnƒTƒ“ƒvƒ‹”Ô†
+		start = datapoint; // æç”»é–‹å§‹ã‚µãƒ³ãƒ—ãƒ«ç•ªå·
 	}
 
-	plot_count = graphspan; // •`‰æ—Ìˆæ‚Ì‘S•‚É‘Š“–‚·‚éƒTƒ“ƒvƒ‹”iŽÀÛ‚Ìƒf[ƒ^ƒTƒ“ƒvƒ‹”‚Å‚Í‚È‚¢j
+	plot_count = graphspan; // æç”»é ˜åŸŸã®å…¨å¹…ã«ç›¸å½“ã™ã‚‹ã‚µãƒ³ãƒ—ãƒ«æ•°ï¼ˆå®Ÿéš›ã®ãƒ‡ãƒ¼ã‚¿ã‚µãƒ³ãƒ—ãƒ«æ•°ã§ã¯ãªã„ï¼‰
 
-	if ((start + plot_count) > datasize) {
-		plot_count = datasize - start;	// ƒf[ƒ^‚Ì”‚ª‘«‚è‚È‚¢‚Ì‚ÅAplot_count‚ðŒ¸‚ç‚µ‚Ä’²®‚·‚é
+	if((start + plot_count) > datasize){
+		plot_count = datasize - start;	// ãƒ‡ãƒ¼ã‚¿ã®æ•°ãŒè¶³ã‚Šãªã„ã®ã§ã€plot_countã‚’æ¸›ã‚‰ã—ã¦èª¿æ•´ã™ã‚‹
 	}
 
-	if (plot_count < 2) return TRUE; // ƒOƒ‰ƒt‚Ì•`‰æ‚É‚Í‚Q‚ÂˆÈã‚ÌƒTƒ“ƒvƒ‹‚ª•K—v
+	if (plot_count < 2) return TRUE; // ã‚°ãƒ©ãƒ•ã®æç”»ã«ã¯ï¼’ã¤ä»¥ä¸Šã®ã‚µãƒ³ãƒ—ãƒ«ãŒå¿…è¦
 
 
-
-	mPICT1.GetClientRect(myRect); //Picture Control‚É‚æ‚é•`‰æ—Ìˆæ‚ð•\‚·Žl•ÓŒ`‚ÌƒTƒCƒYiƒsƒNƒZƒ‹’PˆÊj‚ðŽæ“¾‚·‚é
+	mPICT1.GetClientRect(myRect); //Picture Controlã«ã‚ˆã‚‹æç”»é ˜åŸŸã‚’è¡¨ã™å››è¾ºå½¢ã®ã‚µã‚¤ã‚ºï¼ˆãƒ”ã‚¯ã‚»ãƒ«å˜ä½ï¼‰ã‚’å–å¾—ã™ã‚‹
 	xsize = myRect.Width();
-	xgain = (double)xsize / (double)plot_count; // 1ƒTƒ“ƒvƒ‹‚ ‚½‚è‚ÌXŽ²•ûŒüƒsƒNƒZƒ‹”‚ð‹‚ß‚é
+	xgain = (double)xsize / (double)plot_count; // 1ã‚µãƒ³ãƒ—ãƒ«ã‚ãŸã‚Šã®Xè»¸æ–¹å‘ãƒ”ã‚¯ã‚»ãƒ«æ•°ã‚’æ±‚ã‚ã‚‹
 	ysize = myRect.Height();
-	ygain = (double)ysize / GRAPH_Y_RANGE; // YŽ²•ûŒüƒsƒNƒZƒ‹”‚Æƒf[ƒ^‚Ì”’l”ÍˆÍ‚©‚ç•ÏŠ·ŒW”‚ð‹‚ß‚é
+	ygain = (double)ysize / GRAPH_Y_RANGE; // Yè»¸æ–¹å‘ãƒ”ã‚¯ã‚»ãƒ«æ•°ã¨ãƒ‡ãƒ¼ã‚¿ã®æ•°å€¤ç¯„å›²ã‹ã‚‰å¤‰æ›ä¿‚æ•°ã‚’æ±‚ã‚ã‚‹
 
-	myDC.CreateCompatibleDC(&myPictDC);	//mPICT1‚Æ“¯‚¶‘®«‚ð•`‰æƒoƒbƒtƒ@ƒƒ‚ƒŠ—p‚ÌƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚ÉÝ’è‚·‚é
-	HBITMAP memBM = CreateCompatibleBitmap(myPictDC, xsize, ysize); // ŽÀÛ‚Ì•`‰æ‚ÉŠÖ‚í‚é‰æ‘œƒƒ‚ƒŠ‚Ì«Ž¿‚ðÝ’è‚·‚é
+	myDC.CreateCompatibleDC(&myPictDC);	//mPICT1ã¨åŒã˜å±žæ€§ã‚’æç”»ãƒãƒƒãƒ•ã‚¡ãƒ¡ãƒ¢ãƒªç”¨ã®ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã«è¨­å®šã™ã‚‹
+	HBITMAP memBM = CreateCompatibleBitmap(myPictDC, xsize, ysize); // å®Ÿéš›ã®æç”»ã«é–¢ã‚ã‚‹ç”»åƒãƒ¡ãƒ¢ãƒªã®æ€§è³ªã‚’è¨­å®šã™ã‚‹
 	memBM = CreateCompatibleBitmap(myPictDC, xsize, ysize);
-	SelectObject(myDC, memBM); // ‰æ‘œƒƒ‚ƒŠ‚Ì‘®«‚ðƒoƒbƒtƒ@ƒƒ‚ƒŠ‚ÌƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚É‘Î‰ž‚Ã‚¯‚é
+	SelectObject(myDC, memBM); // ç”»åƒãƒ¡ãƒ¢ãƒªã®å±žæ€§ã‚’ãƒãƒƒãƒ•ã‚¡ãƒ¡ãƒ¢ãƒªã®ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã«å¯¾å¿œã¥ã‘ã‚‹
 
-	myDC.FillSolidRect(myRect, RGB(255, 255, 255)); // ‹éŒ`—Ìˆæ‚ð”’‚Å“h‚è‚Â‚Ô‚·
-	CPen myPen(PS_SOLID, 1, RGB(0, 0, 0)); // ƒyƒ“‚ÌŽí—ÞiSOLIDFŽÀüjAƒyƒ“•i1ƒsƒNƒZƒ‹)AFiR, G, B)
-	CPen* oldPen = myDC.SelectObject(&myPen);	// ƒyƒ“‚ðmyPen‚ÉŽ‚¿‘Ö‚¦‚é‚Æ“¯Žž‚ÉAˆÈ‘O‚Ìƒyƒ“‚ðoldPen‚É‹L‰¯‚³‚¹‚é
+	myDC.FillSolidRect(myRect, RGB(255, 255, 255)); // çŸ©å½¢é ˜åŸŸã‚’ç™½ã§å¡—ã‚Šã¤ã¶ã™
+	CPen myPen(PS_SOLID, 1, RGB(0, 0, 0)); // ãƒšãƒ³ã®ç¨®é¡žï¼ˆSOLIDï¼šå®Ÿç·šï¼‰ã€ãƒšãƒ³å¹…ï¼ˆ1ãƒ”ã‚¯ã‚»ãƒ«)ã€è‰²ï¼ˆR, G, B)
+	CPen* oldPen = myDC.SelectObject(&myPen);	// ãƒšãƒ³ã‚’myPenã«æŒã¡æ›¿ãˆã‚‹ã¨åŒæ™‚ã«ã€ä»¥å‰ã®ãƒšãƒ³ã‚’oldPenã«è¨˜æ†¶ã•ã›ã‚‹
 
-	// ‚±‚±‚©‚çƒOƒ‰ƒt‚ð•`‰æ‚·‚é
-	// •`‰æŠJŽnƒTƒ“ƒvƒ‹”Ô†@start
-	// •`‰æƒTƒ“ƒvƒ‹”@total
-	// XŽ²•`‰æŽž‚ÌŠg‘åk¬ŒW”@xgain (double)
-	// YŽ²•`‰æŽž‚ÌŠg‘åk¬ŒW”@ygain (double)
-	// YŽ²ƒf[ƒ^‚Ìƒ[ƒ“_ƒIƒtƒZƒbƒg@OFFSET (double)
+
+	// ã“ã“ã‹ã‚‰ã‚°ãƒ©ãƒ•ã‚’æç”»ã™ã‚‹
+	// æç”»é–‹å§‹ã‚µãƒ³ãƒ—ãƒ«ç•ªå·ã€€start
+	// æç”»ã‚µãƒ³ãƒ—ãƒ«æ•°ã€€total
+	// Xè»¸æç”»æ™‚ã®æ‹¡å¤§ç¸®å°ä¿‚æ•°ã€€xgain (double)
+	// Yè»¸æç”»æ™‚ã®æ‹¡å¤§ç¸®å°ä¿‚æ•°ã€€ygain (double)
+	// Yè»¸ãƒ‡ãƒ¼ã‚¿ã®ã‚¼ãƒ­ç‚¹ã‚ªãƒ•ã‚»ãƒƒãƒˆã€€OFFSET (double)
 
 	int i, xx, yy;
 
 	for (i = 0; i < plot_count; i++) {
 		xx = (int)(xgain * (double)i);
 		yy = (int)(ygain * (-databuf[6][start + i] + GRAPH_Y_OFFSET));
-		// —ÌˆæŠO‚É•`‰æ‚µ‚È‚¢‚æ‚¤‚ÉƒNƒŠƒbƒsƒ“ƒOˆ—‚ðs‚¤
+
+		// é ˜åŸŸå¤–ã«æç”»ã—ãªã„ã‚ˆã†ã«ã‚¯ãƒªãƒƒãƒ”ãƒ³ã‚°å‡¦ç†ã‚’è¡Œã†
 		xx = (xx < 0) ? 0 : xx;
 		yy = (yy < 0) ? 0 : yy;
 		xx = (xx > (xsize - 1)) ? xsize - 1 : xx;
 		yy = (yy > (ysize - 1)) ? ysize - 1 : yy;
 		if (i == 0) {
-			myDC.MoveTo(xx, yy);	// ƒyƒ“‚ðÀ•W( xx, yy)‚ÉˆÚ“®‚³‚¹‚éiˆÚ“®‚·‚é‚¾‚¯‚È‚Ì‚ÅAü‚Íˆø‚¢‚Ä‚¢‚È‚¢j
+
+			myDC.MoveTo(xx, yy);	// ãƒšãƒ³ã‚’åº§æ¨™( xx, yy)ã«ç§»å‹•ã•ã›ã‚‹ï¼ˆç§»å‹•ã™ã‚‹ã ã‘ãªã®ã§ã€ç·šã¯å¼•ã„ã¦ã„ãªã„ï¼‰
 		}
 		else {
-			myDC.LineTo(xx, yy);	// ƒyƒ“‚ðÀ•W ( xx, yy)‚ÉˆÚ“®‚³‚¹‚È‚ª‚çü‚ðˆø‚­
+			myDC.LineTo(xx, yy);	// ãƒšãƒ³ã‚’åº§æ¨™ ( xx, yy)ã«ç§»å‹•ã•ã›ãªãŒã‚‰ç·šã‚’å¼•ã
 		}
 	}
 
-	// ƒ¢’Ç‹L
-	// ‰æ–Ê•`‰æ
-	// ã‚ÌƒOƒ‰ƒt•`‰æ‚Ííœ‚Ü‚½‚ÍƒRƒƒ“ƒgƒAƒEƒg
+	// ï¿½ï¿½ï¿½Ç‹L
+	// ï¿½ï¿½Ê•`ï¿½ï¿½
+	// ï¿½ï¿½ÌƒOï¿½ï¿½ï¿½tï¿½`ï¿½ï¿½Ííœï¿½Ü‚ï¿½ï¿½ÍƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½Aï¿½Eï¿½g
 	switch (mode)
 	{
-		// U‚é‘O‚Ì‰æ–Ê
+		// ï¿½Uï¿½ï¿½Oï¿½Ì‰ï¿½ï¿½
 		case idol:
 			break;
 
-		// U‚Á‚Ä‚¢‚éŽž‚Ì‰æ–Ê
+		// ï¿½Uï¿½ï¿½ï¿½Ä‚ï¿½ï¿½éŽžï¿½Ì‰ï¿½ï¿½
 		case shake:
 			break;
 
-		// ’‚®‰æ–Ê
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		case finish:
 			break;
 
-		// Œ‹‰Ê‚Ì‰æ–Ê
+		// ï¿½ï¿½ï¿½Ê‚Ì‰ï¿½ï¿½
 		case result:
 			break;
 	}
 
-	// ƒ¢‚±‚±‚Ü‚Å
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½
 
-	// ƒOƒ‰ƒt‚Ì•`‰æ‚Í‚±‚±‚Ü‚Å
 
-	myPictDC.BitBlt(0, 0, xsize, ysize, &myDC, 0, 0, SRCCOPY); // ƒoƒbƒtƒ@ƒƒ‚ƒŠ‚©‚ç‰æ–ÊimyPictDC)‚Éƒf[ƒ^‚ð“]‘—‚·‚é
+	// ã‚°ãƒ©ãƒ•ã®æç”»ã¯ã“ã“ã¾ã§
 
-	myDC.SelectObject(oldPen);	// ˆÈ‘O‚Ìƒyƒ“‚É–ß‚µ‚Ä‚¨‚­
+	myPictDC.BitBlt(0, 0, xsize, ysize, &myDC, 0, 0, SRCCOPY); // ãƒãƒƒãƒ•ã‚¡ãƒ¡ãƒ¢ãƒªã‹ã‚‰ç”»é¢ï¼ˆmyPictDC)ã«ãƒ‡ãƒ¼ã‚¿ã‚’è»¢é€ã™ã‚‹
 
-	// ‹O“¹ƒ_ƒCƒAƒOƒ‰ƒ€‚Ì•`‰æ
+	myDC.SelectObject(oldPen);	// ä»¥å‰ã®ãƒšãƒ³ã«æˆ»ã—ã¦ãŠã
+
+	// è»Œé“ãƒ€ã‚¤ã‚¢ã‚°ãƒ©ãƒ ã®æç”»
 	// Jun. 26, 2024
 
-	CClientDC myPictDC2(&mPICT2); // Picture Control‚ÉÝ’è‚µ‚½•Ï”imPICT2j‚©‚ç•`‰æ—pƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚ðì‚é
-	CRect myRect2; // Žl•ÓŒ`‚ÌƒTƒCƒY‚ð•\Œ»‚·‚é‚½‚ß‚Ì\‘¢‘Ì
-	CDC myDC2; // •`‰æƒoƒbƒtƒ@ƒƒ‚ƒŠ—p‚ÌƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg
+	CClientDC myPictDC2(&mPICT2); // Picture Controlã«è¨­å®šã—ãŸå¤‰æ•°ï¼ˆmPICT2ï¼‰ã‹ã‚‰æç”»ç”¨ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’ä½œã‚‹
+	CRect myRect2; // å››è¾ºå½¢ã®ã‚µã‚¤ã‚ºã‚’è¡¨ç¾ã™ã‚‹ãŸã‚ã®æ§‹é€ ä½“
+	CDC myDC2; // æç”»ãƒãƒƒãƒ•ã‚¡ãƒ¡ãƒ¢ãƒªç”¨ã®ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆ
 	int xsize2, ysize2;
 
-	int start2;	// •`‰æ‚ðŠJŽn‚·‚éƒTƒ“ƒvƒ‹”Ô†A•`‰æ‚·‚éƒTƒ“ƒvƒ‹”
-	int plot_count2;	// ƒOƒ‰ƒt‚Éƒvƒƒbƒg‚·‚é“_‚Ì”
-	double xgain2, ygain2; // ƒOƒ‰ƒt•`‰æ‚É‚¨‚¯‚éŠg‘åEk¬ŒW”
+	int start2;	// æç”»ã‚’é–‹å§‹ã™ã‚‹ã‚µãƒ³ãƒ—ãƒ«ç•ªå·ã€æç”»ã™ã‚‹ã‚µãƒ³ãƒ—ãƒ«æ•°
+	int plot_count2;	// ã‚°ãƒ©ãƒ•ã«ãƒ—ãƒ­ãƒƒãƒˆã™ã‚‹ç‚¹ã®æ•°
+	double xgain2, ygain2; // ã‚°ãƒ©ãƒ•æç”»ã«ãŠã‘ã‚‹æ‹¡å¤§ãƒ»ç¸®å°ä¿‚æ•°
 
 	if (rf_status == 1) {
 		start2 = datasize - graphspan;
@@ -281,66 +283,71 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 		}
 	}
 	else {
-		start2 = datapoint; // •`‰æŠJŽnƒTƒ“ƒvƒ‹”Ô†
+
+		start2 = datapoint; // æç”»é–‹å§‹ã‚µãƒ³ãƒ—ãƒ«ç•ªå·
 	}
 
-	plot_count2 = graphspan; // •`‰æ—Ìˆæ‚Ì‘S•‚É‘Š“–‚·‚éƒTƒ“ƒvƒ‹”iŽÀÛ‚Ìƒf[ƒ^ƒTƒ“ƒvƒ‹”‚Å‚Í‚È‚¢j
+	plot_count2 = graphspan; // æç”»é ˜åŸŸã®å…¨å¹…ã«ç›¸å½“ã™ã‚‹ã‚µãƒ³ãƒ—ãƒ«æ•°ï¼ˆå®Ÿéš›ã®ãƒ‡ãƒ¼ã‚¿ã‚µãƒ³ãƒ—ãƒ«æ•°ã§ã¯ãªã„ï¼‰
 
 	if ((start2 + plot_count2) > datasize) {
-		plot_count2 = datasize - start2;	// ƒf[ƒ^‚Ì”‚ª‘«‚è‚È‚¢‚Ì‚ÅAplot_count‚ðŒ¸‚ç‚µ‚Ä’²®‚·‚é
+		plot_count2 = datasize - start2;	// ãƒ‡ãƒ¼ã‚¿ã®æ•°ãŒè¶³ã‚Šãªã„ã®ã§ã€plot_countã‚’æ¸›ã‚‰ã—ã¦èª¿æ•´ã™ã‚‹
 	}
 
-	if (plot_count2 < 2) return TRUE; // ƒOƒ‰ƒt‚Ì•`‰æ‚É‚Í‚Q‚ÂˆÈã‚ÌƒTƒ“ƒvƒ‹‚ª•K—v
+	if (plot_count2 < 2) return TRUE; // ã‚°ãƒ©ãƒ•ã®æç”»ã«ã¯ï¼’ã¤ä»¥ä¸Šã®ã‚µãƒ³ãƒ—ãƒ«ãŒå¿…è¦
 
-	mPICT2.GetClientRect(myRect2); //Picture Control‚É‚æ‚é•`‰æ—Ìˆæ‚ð•\‚·Žl•ÓŒ`‚ÌƒTƒCƒYiƒsƒNƒZƒ‹’PˆÊj‚ðŽæ“¾‚·‚é
+	mPICT2.GetClientRect(myRect2); //Picture Controlã«ã‚ˆã‚‹æç”»é ˜åŸŸã‚’è¡¨ã™å››è¾ºå½¢ã®ã‚µã‚¤ã‚ºï¼ˆãƒ”ã‚¯ã‚»ãƒ«å˜ä½ï¼‰ã‚’å–å¾—ã™ã‚‹
 	xsize2 = myRect2.Width();
-	xgain2 = (double)xsize2 / PHI_RANGE;	// XŽ²•ûŒüƒsƒNƒZƒ‹”‚Æƒf[ƒ^v‚Ì”’l”ÍˆÍ‚©‚ç•ÏŠ·ŒW”‚ð‹‚ß‚é
+	xgain2 = (double)xsize2 / PHI_RANGE;	// Xè»¸æ–¹å‘ãƒ”ã‚¯ã‚»ãƒ«æ•°ã¨ãƒ‡ãƒ¼ã‚¿ã€ã®æ•°å€¤ç¯„å›²ã‹ã‚‰å¤‰æ›ä¿‚æ•°ã‚’æ±‚ã‚ã‚‹
 	ysize2 = myRect2.Height();
-	ygain2 = (double)ysize2 / THETA_RANGE; // YŽ²•ûŒüƒsƒNƒZƒ‹”‚Æƒf[ƒ^‚Ì”’l”ÍˆÍ‚©‚ç•ÏŠ·ŒW”‚ð‹‚ß‚é
+	ygain2 = (double)ysize2 / THETA_RANGE; // Yè»¸æ–¹å‘ãƒ”ã‚¯ã‚»ãƒ«æ•°ã¨ãƒ‡ãƒ¼ã‚¿ã®æ•°å€¤ç¯„å›²ã‹ã‚‰å¤‰æ›ä¿‚æ•°ã‚’æ±‚ã‚ã‚‹
 
-	myDC2.CreateCompatibleDC(&myPictDC2);	//mPICT1‚Æ“¯‚¶‘®«‚ð•`‰æƒoƒbƒtƒ@ƒƒ‚ƒŠ—p‚ÌƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚ÉÝ’è‚·‚é
-	HBITMAP memBM2 = CreateCompatibleBitmap(myPictDC2, xsize2, ysize2); // ŽÀÛ‚Ì•`‰æ‚ÉŠÖ‚í‚é‰æ‘œƒƒ‚ƒŠ‚Ì«Ž¿‚ðÝ’è‚·‚é
+	myDC2.CreateCompatibleDC(&myPictDC2);	//mPICT1ã¨åŒã˜å±žæ€§ã‚’æç”»ãƒãƒƒãƒ•ã‚¡ãƒ¡ãƒ¢ãƒªç”¨ã®ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã«è¨­å®šã™ã‚‹
+	HBITMAP memBM2 = CreateCompatibleBitmap(myPictDC2, xsize2, ysize2); // å®Ÿéš›ã®æç”»ã«é–¢ã‚ã‚‹ç”»åƒãƒ¡ãƒ¢ãƒªã®æ€§è³ªã‚’è¨­å®šã™ã‚‹
 	memBM2 = CreateCompatibleBitmap(myPictDC2, xsize2, ysize2);
-	SelectObject(myDC2, memBM2); // ‰æ‘œƒƒ‚ƒŠ‚Ì‘®«‚ðƒoƒbƒtƒ@ƒƒ‚ƒŠ‚ÌƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚É‘Î‰ž‚Ã‚¯‚é
+	SelectObject(myDC2, memBM2); // ç”»åƒãƒ¡ãƒ¢ãƒªã®å±žæ€§ã‚’ãƒãƒƒãƒ•ã‚¡ãƒ¡ãƒ¢ãƒªã®ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã«å¯¾å¿œã¥ã‘ã‚‹
 
-	myDC2.FillSolidRect(myRect2, RGB(255, 255, 255)); // ‹éŒ`—Ìˆæ‚ð”’‚Å“h‚è‚Â‚Ô‚·
-	CPen myPen2(PS_SOLID, 1, RGB(0, 0, 0)); // ƒyƒ“‚ÌŽí—ÞiSOLIDFŽÀüjAƒyƒ“•i1ƒsƒNƒZƒ‹)AFiR, G, B)
-	CPen* oldPen2 = myDC2.SelectObject(&myPen2);	// ƒyƒ“‚ðmyPen‚ÉŽ‚¿‘Ö‚¦‚é‚Æ“¯Žž‚ÉAˆÈ‘O‚Ìƒyƒ“‚ðoldPen‚É‹L‰¯‚³‚¹‚é
 
-	// ‚±‚±‚©‚çƒOƒ‰ƒt‚ð•`‰æ‚·‚é
-	// •`‰æŠJŽnƒTƒ“ƒvƒ‹”Ô†@start
-	// •`‰æƒTƒ“ƒvƒ‹”@total
-	// XŽ²•`‰æŽž‚ÌŠg‘åk¬ŒW”@xgain (double)
-	// YŽ²•`‰æŽž‚ÌŠg‘åk¬ŒW”@ygain (double)
-	// XŽ²ƒf[ƒ^‚Ìƒ[ƒ“_ƒIƒtƒZƒbƒg  PHI_OFFSET (double)
-	// YŽ²ƒf[ƒ^‚Ìƒ[ƒ“_ƒIƒtƒZƒbƒg@THETA_OFFSET (double)
+	myDC2.FillSolidRect(myRect2, RGB(255, 255, 255)); // çŸ©å½¢é ˜åŸŸã‚’ç™½ã§å¡—ã‚Šã¤ã¶ã™
+	CPen myPen2(PS_SOLID, 1, RGB(0, 0, 0)); // ãƒšãƒ³ã®ç¨®é¡žï¼ˆSOLIDï¼šå®Ÿç·šï¼‰ã€ãƒšãƒ³å¹…ï¼ˆ1ãƒ”ã‚¯ã‚»ãƒ«)ã€è‰²ï¼ˆR, G, B)
+	CPen* oldPen2 = myDC2.SelectObject(&myPen2);	// ãƒšãƒ³ã‚’myPenã«æŒã¡æ›¿ãˆã‚‹ã¨åŒæ™‚ã«ã€ä»¥å‰ã®ãƒšãƒ³ã‚’oldPenã«è¨˜æ†¶ã•ã›ã‚‹
+
+
+	// ã“ã“ã‹ã‚‰ã‚°ãƒ©ãƒ•ã‚’æç”»ã™ã‚‹
+	// æç”»é–‹å§‹ã‚µãƒ³ãƒ—ãƒ«ç•ªå·ã€€start
+	// æç”»ã‚µãƒ³ãƒ—ãƒ«æ•°ã€€total
+	// Xè»¸æç”»æ™‚ã®æ‹¡å¤§ç¸®å°ä¿‚æ•°ã€€xgain (double)
+	// Yè»¸æç”»æ™‚ã®æ‹¡å¤§ç¸®å°ä¿‚æ•°ã€€ygain (double)
+	// Xè»¸ãƒ‡ãƒ¼ã‚¿ã®ã‚¼ãƒ­ç‚¹ã‚ªãƒ•ã‚»ãƒƒãƒˆ  PHI_OFFSET (double)
+	// Yè»¸ãƒ‡ãƒ¼ã‚¿ã®ã‚¼ãƒ­ç‚¹ã‚ªãƒ•ã‚»ãƒƒãƒˆã€€THETA_OFFSET (double)
 
 //	int i, xx, yy;
 
 	for (i = 0; i < plot_count2; i++) {
 		xx = (int)(xgain2 * (-databuf[12][start2 + i] + PHI_OFFSET));
 		yy = (int)(ygain2 * (databuf[11][start2 + i] + THETA_OFFSET));
-		// —ÌˆæŠO‚É•`‰æ‚µ‚È‚¢‚æ‚¤‚ÉƒNƒŠƒbƒsƒ“ƒOˆ—‚ðs‚¤
+
+		// é ˜åŸŸå¤–ã«æç”»ã—ãªã„ã‚ˆã†ã«ã‚¯ãƒªãƒƒãƒ”ãƒ³ã‚°å‡¦ç†ã‚’è¡Œã†
 		xx = (xx < 0) ? 0 : xx;
 		yy = (yy < 0) ? 0 : yy;
 		xx = (xx > (xsize - 1)) ? xsize - 1 : xx;
 		yy = (yy > (ysize - 1)) ? ysize - 1 : yy;
 		if (i == 0) {
-			myDC2.MoveTo(xx, yy);	// ƒyƒ“‚ðÀ•W( xx, yy)‚ÉˆÚ“®‚³‚¹‚éiˆÚ“®‚·‚é‚¾‚¯‚È‚Ì‚ÅAü‚Íˆø‚¢‚Ä‚¢‚È‚¢j
+
+			myDC2.MoveTo(xx, yy);	// ãƒšãƒ³ã‚’åº§æ¨™( xx, yy)ã«ç§»å‹•ã•ã›ã‚‹ï¼ˆç§»å‹•ã™ã‚‹ã ã‘ãªã®ã§ã€ç·šã¯å¼•ã„ã¦ã„ãªã„ï¼‰
 		}
 		else {
-			myDC2.LineTo(xx, yy);	// ƒyƒ“‚ðÀ•W ( xx, yy)‚ÉˆÚ“®‚³‚¹‚È‚ª‚çü‚ðˆø‚­
+			myDC2.LineTo(xx, yy);	// ãƒšãƒ³ã‚’åº§æ¨™ ( xx, yy)ã«ç§»å‹•ã•ã›ãªãŒã‚‰ç·šã‚’å¼•ã
 		}
 	}
 
-	// ƒOƒ‰ƒt‚Ì•`‰æ‚Í‚±‚±‚Ü‚Å
+	// ã‚°ãƒ©ãƒ•ã®æç”»ã¯ã“ã“ã¾ã§
 
-	myPictDC2.BitBlt(0, 0, xsize2, ysize2, &myDC2, 0, 0, SRCCOPY); // ƒoƒbƒtƒ@ƒƒ‚ƒŠ‚©‚ç‰æ–ÊimyPictDC)‚Éƒf[ƒ^‚ð“]‘—‚·‚é
+	myPictDC2.BitBlt(0, 0, xsize2, ysize2, &myDC2, 0, 0, SRCCOPY); // ï¿½oï¿½bï¿½tï¿½@ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÊimyPictDC)ï¿½Éƒfï¿½[ï¿½^ï¿½ï¿½]ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-	myDC2.SelectObject(oldPen2);	// ˆÈ‘O‚Ìƒyƒ“‚É–ß‚µ‚Ä‚¨‚­
+	myDC2.SelectObject(oldPen2);	// ä»¥å‰ã®ãƒšãƒ³ã«æˆ»ã—ã¦ãŠã
 
 
-	// ‹O“¹ƒ_ƒCƒAƒOƒ‰ƒ€@ˆ—ƒR[ƒh‚±‚±‚Ü‚Å
+	// è»Œé“ãƒ€ã‚¤ã‚¢ã‚°ãƒ©ãƒ ã€€å‡¦ç†ã‚³ãƒ¼ãƒ‰ã“ã“ã¾ã§
 
 	if (rf_status == 1) {
 		s.Format(_T("Sample Count = %d Error = %d"), start, rf_errcnt);
@@ -349,18 +356,17 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 		s.Format(_T("Sample Count = %d"), start);
 	}
 	msgED.SetWindowTextW(s);
-	DeleteDC(myDC); // ƒƒ‚ƒŠƒoƒbƒtƒ@‚ÌƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚ð‰ð•ú‚·‚é
-	DeleteObject(memBM); // ‰æ‘œƒƒ‚ƒŠ‚Ì«Ž¿‚ð•\‚·ƒrƒbƒgƒ}ƒbƒv‚ð‰ð•ú‚·‚é
+
+	DeleteDC(myDC); // ãƒ¡ãƒ¢ãƒªãƒãƒƒãƒ•ã‚¡ã®ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’è§£æ”¾ã™ã‚‹
+	DeleteObject(memBM); // ç”»åƒãƒ¡ãƒ¢ãƒªã®æ€§è³ªã‚’è¡¨ã™ãƒ“ãƒƒãƒˆãƒžãƒƒãƒ—ã‚’è§£æ”¾ã™ã‚‹
 
 	DeleteDC(myDC2);
 	DeleteObject(memBM2);
 
-	rf_interlock = 0; // •`‰æ‚ªŠ®—¹‚µ‚½‚±‚Æ‚ðƒOƒ[ƒoƒ‹•Ï”‚ð‰î‚µ‚Ä“`‚¦‚é
-	// ‚ 
 
-	rf_interlock = 0; // •`‰æ‚ªŠ®—¹‚µ‚½‚±‚Æ‚ðƒOƒ[ƒoƒ‹•Ï”‚ð‰î‚µ‚Ä“`‚¦‚é
+	rf_interlock = 0; // æç”»ãŒå®Œäº†ã—ãŸã“ã¨ã‚’ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã‚’ä»‹ã—ã¦ä¼ãˆã‚‹
 
-	//ˆÈ‰ºƒIƒŠƒWƒiƒ‹
+	//ä»¥ä¸‹ã‚ªãƒªã‚¸ãƒŠãƒ«
 	CString mes_swing;
 	CString mes_wrist;
 	CString mes_result;
@@ -369,7 +375,8 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 
 	AATL += abs(databuf[16][start]);
 
-	//1ŽžŠÔ’PˆÊ‘O‚ÌŽèŽñ‚Ð‚Ë‚èŠp‚Æ‚Ì·‚Ìâ‘Î’l‚ðsum_data_dif‚É‰ÁŽZ‚·‚é
+
+	//1æ™‚é–“å˜ä½å‰ã®æ‰‹é¦–ã²ã­ã‚Šè§’ã¨ã®å·®ã®çµ¶å¯¾å€¤ã‚’sum_data_difã«åŠ ç®—ã™ã‚‹
 	double wrist_def;
 	wrist_def = databuf[12][start] - databuf[12][start - 1];
 	if (wrist_def < 0) {
@@ -381,10 +388,11 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 
 	sample_count++;
 
-	//’âŽ~‚µ‚Ä‚¢‚é‚±‚Æ‚ð”»’è
+
+	//åœæ­¢ã—ã¦ã„ã‚‹ã“ã¨ã‚’åˆ¤å®š
 	jud_stop(start);
 
-	//ˆê’èŽžŠÔˆÈãŽ~‚Ü‚Á‚Ä‚¢‚é‚Æ‚«ƒpƒ‰ƒ[ƒ^‚ðƒŠƒZƒbƒg
+	//ï¿½ï¿½èŽžï¿½ÔˆÈï¿½~ï¿½Ü‚ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½Æ‚ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½Zï¿½bï¿½g
 	if (stop_count >= 20) {
 		dir = 0;
 		period = 0;
@@ -395,11 +403,12 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 		sample_count = 0;
 	}
 
-	//’‚®Žp¨‚Åˆê’èŽžŠÔŽ~‚Ü‚Á‚Ä‚¢‚é‚Æ‚«’‚®ƒtƒ‰ƒO‚ð—§‚Ä‚é
+
+	//æ³¨ãå§¿å‹¢ã§ä¸€å®šæ™‚é–“æ­¢ã¾ã£ã¦ã„ã‚‹ã¨ãæ³¨ããƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 	jud_pour(start);
 
-	//‘O˜rŽp¨Šp‚™‚Ì’l‚©‚çU‚è‘¬“x‚ð‹‚ß‚é
-	//dir‚ª0‚ÌŽžU‚è‰º‚ë‚µ•ûŒüA1‚ÌŽžU‚èã‚°•ûŒü
+
+	//ä¸€å®šæ™‚é–“ä»¥ä¸Šæ­¢ã¾ã£ã¦ã„ã‚‹ã¨ããƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ãƒªã‚»ãƒƒãƒˆ
 	if (stop_count >= 20) {
 		dir = 0;
 		period = 0;
@@ -410,27 +419,28 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 		sample_count = 0;
 	}
 
-	//’‚®Žp¨‚Åˆê’èŽžŠÔŽ~‚Ü‚Á‚Ä‚¢‚é‚Æ‚«’‚®ƒtƒ‰ƒO‚ð—§‚Ä‚é
+	//æ³¨ãå§¿å‹¢ã§ä¸€å®šæ™‚é–“æ­¢ã¾ã£ã¦ã„ã‚‹ã¨ãæ³¨ããƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 	jud_pour(start);
 
-	// ƒ¢’Ç‹L
-	// U‚èŽn‚ß‚½‚çU‚Á‚Ä‚¢‚éƒtƒ‰ƒO‚ð—§‚Ä‚é
+	// ï¿½ï¿½ï¿½Ç‹L
+	// ï¿½Uï¿½ï¿½nï¿½ß‚ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½Oï¿½ð—§‚Ä‚ï¿½
 	start_shake(start);
 
 	if (shaking == TRUE && mode == idol)
 	{
-		mode = shake; // ƒQ[ƒ€ŠJŽn‚©‚çU‚èŽn‚ß‚½‰æ–Ê‚Ö
+		mode = shake; // ï¿½Qï¿½[ï¿½ï¿½ï¿½Jï¿½nï¿½ï¿½ï¿½ï¿½Uï¿½ï¿½nï¿½ß‚ï¿½ï¿½ï¿½Ê‚ï¿½
 	}
 
 	if (pour == TRUE && mode == shake)
 	{
-		mode = finish; // U‚Á‚Ä‚¢‚éó‘Ô‚©‚çƒŠƒUƒ‹ƒg‰æ–Ê‚Ö
+		mode = finish; // ï¿½Uï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½Ô‚ï¿½ï¿½çƒŠï¿½Uï¿½ï¿½ï¿½gï¿½ï¿½Ê‚ï¿½
 	}
 
-	// ƒ¢‚±‚±‚Ü‚Å
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½
 
-	//‘O˜rŽp¨Šp‚™‚Ì’l‚©‚çU‚è‘¬“x‚ð‹‚ß‚é
-	//dir‚ª0‚ÌŽžU‚è‰º‚ë‚µ•ûŒüA1‚ÌŽžU‚èã‚°•ûŒü
+
+	//å‰è…•å§¿å‹¢è§’ï½™ã®å€¤ã‹ã‚‰æŒ¯ã‚Šé€Ÿåº¦ã‚’æ±‚ã‚ã‚‹
+	//dirãŒ0ã®æ™‚æŒ¯ã‚Šä¸‹ã‚ã—æ–¹å‘ã€1ã®æ™‚æŒ¯ã‚Šä¸Šã’æ–¹å‘
 	if (dir == 0) {
 		if (val < 0.0) {
 			dir = 1;
@@ -471,8 +481,8 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	double theta_score = (theta_average - 10) * 10;
 	double whole_score = swing_score + theta_score;
 
-	// ƒ¢’Ç‹L
-	// ‰æ–Êƒ‚[ƒh‚ðƒGƒfƒBƒbƒgƒ{ƒbƒNƒX‚É•\Ž¦
+	// ï¿½ï¿½ï¿½Ç‹L
+	// ï¿½ï¿½Êƒï¿½ï¿½[ï¿½hï¿½ï¿½ï¿½Gï¿½fï¿½Bï¿½bï¿½gï¿½{ï¿½bï¿½Nï¿½Xï¿½É•\ï¿½ï¿½
 	switch (mode)
 	{
 	case idol:
@@ -496,15 +506,17 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 
 	// ?????
 
-	mes_swing.Format(_T("•½‹ÏŽžŠÔ: %lf s\r\nƒXƒRƒA: %lf"), swing_average * 32.0, swing_score);
-	mes_wrist.Format(_T("Šp“x•½‹Ï: %lf “x\r\nƒXƒRƒA: %lf"), theta_average, theta_score);
-	mes_result.Format(_T("‘‡ƒXƒRƒA: %lf\r\nBPM: %lf\r\npour: %d"), whole_score, bpm_buf[0][start], pour);
+
+	mes_swing.Format(_T("å¹³å‡æ™‚é–“: %lf s\r\nã‚¹ã‚³ã‚¢: %lf"), swing_average * 32.0, swing_score);
+	mes_wrist.Format(_T("è§’åº¦å¹³å‡: %lf ?\r\nã‚¹ã‚³ã‚¢: %lf"), theta_average, theta_score);
+	mes_result.Format(_T("ç·åˆã‚¹ã‚³ã‚¢: %lf\r\nBPM: %lf\r\npour: %d"), whole_score, bpm_buf[0][start], pour);
 	msgED2.SetWindowTextW(mes_wrist);
 
 	msgED3.SetWindowTextW(mes_swing);
 	msgED4.SetWindowTextW(mes_result);
 
-	//ƒIƒŠƒWƒiƒ‹‚±‚±‚Ü‚Å
 
-	return TRUE; // LRESULTŒ^ŠÖ”‚Í˜_—’l‚ðƒŠƒ^[ƒ“‚·‚é‚±‚Æ‚É‚È‚Á‚Ä‚¢‚é
+	//ã‚ªãƒªã‚¸ãƒŠãƒ«ã“ã“ã¾ã§
+
+	return TRUE; // LRESULTåž‹é–¢æ•°ã¯è«–ç†å€¤ã‚’ãƒªã‚¿ãƒ¼ãƒ³ã™ã‚‹ã“ã¨ã«ãªã£ã¦ã„ã‚‹
 }
