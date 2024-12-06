@@ -50,7 +50,7 @@ int sample_count = 0;
 double AATL = 0;
 double BPM = 0;
 clock_t start_time, end_time;
-BOOLEAN pour, stop = FALSE;
+BOOLEAN shaking, pour, stop = FALSE;
 
 // ランダムピック
 std::string RandomPick(int shakeCount)
@@ -128,23 +128,6 @@ void start_shake(int time)
 }
 
 // Δここまで
-
-//注いでいることを判定する独自関数
-void jud_pour(int time) {
-	if ((stop_count >= 20) && (databuf[12][time] >= 120.0) && (databuf[12][time] <= 180.0)) {
-		pour = TRUE;
-	}
-}
-
-//止まっているときstop_countを1加算する
-void jud_stop(int time) {
-	if (databuf[16][time] <= 2000) {
-		stop_count++;
-	}
-	else {
-		stop_count = 0;
-	}
-}
 
 // 手入力で追記したグラフ描画用メッセージハンドラー
 
