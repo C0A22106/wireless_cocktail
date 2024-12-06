@@ -89,14 +89,14 @@ std::string randomresult = RandomPick(3);
 
 extern double bpm_buf[2][MAXDATASIZE];
 
-//�����ł��邱�Ƃ𔻒肷��Ǝ��֐�
+// 注いでいることを判定する独自関数
 void jud_pour(int time) {
 	if ((stop_count >= 20) && (databuf[12][time] >= 120.0) && (databuf[12][time] <= 180.0)) {
 		pour = TRUE;
 	}
 }
 
-//�~�܂��Ă���Ƃ�stop_count��1���Z����
+//止まっているときstop_countを1加算する
 void jud_stop(int time) {
 	if (databuf[16][time] <= 2000) {
 		stop_count++;
@@ -106,20 +106,19 @@ void jud_stop(int time) {
 	}
 }
 
-// ����͂ŒǋL�����O���t�`��p���b�Z�[�W�n���h���[
-
-// ��ʃ��[�h���Ǘ�����\����
+// Δ追記
+// 画面モードを管理する構造体
 enum Mode
 {
-	idol, // �ҋ@��ʁi�U��O�j
-	shake, // �Q�[�����i�U���Ă���j
-	finish, // �I���i�J�N�e���𒍂���ʁj
-	result // ���ʔ��\
+	idol, // 待機画面（振る前）
+	shake, // ゲーム中（振っている）
+	finish, // 終了（カクテルを注ぐ画面）
+	result // 結果発表
 };
 
 Mode mode = idol;
 
-// �U��n�߂����𔻒肷��֐�
+// 振り始めた事を判定する関数
 void start_shake(int time)
 {
 	if (databuf[16][time] >= 2000)
@@ -128,7 +127,7 @@ void start_shake(int time)
 	}
 }
 
-// �������܂�
+// Δここまで
 
 //注いでいることを判定する独自関数
 void jud_pour(int time) {
@@ -233,29 +232,29 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 		}
 	}
 
-	// ���ǋL
-	// ��ʕ`��
-	// ��̃O���t�`��͍폜�܂��̓R�����g�A�E�g
+	// Δ追記
+	// 画面描画
+	// 上のグラフ描画は削除またはコメントアウト
 	switch (mode)
 	{
-		// �U��O�̉��
+		// 振る前の画面
 		case idol:
 			break;
 
-		// �U���Ă��鎞�̉��
+		// 振っている時の画面
 		case shake:
 			break;
 
-		// �������
+		// 注ぐ画面
 		case finish:
 			break;
 
-		// ���ʂ̉��
+		// 結果の画面
 		case result:
 			break;
 	}
 
-	// �������܂�
+	// Δここまで
 
 
 	// グラフの描画はここまで
@@ -392,7 +391,7 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	//停止していることを判定
 	jud_stop(start);
 
-	//��莞�Ԉȏ�~�܂��Ă���Ƃ��p�����[�^�����Z�b�g
+	//一定時間以上止まっているときパラメータをリセット
 	if (stop_count >= 20) {
 		dir = 0;
 		period = 0;
@@ -422,21 +421,20 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	//注ぐ姿勢で一定時間止まっているとき注ぐフラグを立てる
 	jud_pour(start);
 
-	// ���ǋL
-	// �U��n�߂���U���Ă���t���O�𗧂Ă�
+	// Δ追記
+	// 振り始めたら振っているフラグを立てる
 	start_shake(start);
 
 	if (shaking == TRUE && mode == idol)
 	{
-		mode = shake; // �Q�[���J�n����U��n�߂���ʂ�
+		mode = shake; // ゲーム開始から振り始めた画面へ
 	}
 
 	if (pour == TRUE && mode == shake)
 	{
-		mode = finish; // �U���Ă����Ԃ��烊�U���g��ʂ�
+		mode = finish; // 振っている状態からリザルト画面へ
 	}
-
-	// �������܂�
+	// Δここまで
 
 
 	//前腕姿勢角ｙの値から振り速度を求める
@@ -481,8 +479,8 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	double theta_score = (theta_average - 10) * 10;
 	double whole_score = swing_score + theta_score;
 
-	// ���ǋL
-	// ��ʃ��[�h���G�f�B�b�g�{�b�N�X�ɕ\��
+	// Δ追記
+	// 画面モードをエディットボックスに表示
 	switch (mode)
 	{
 	case idol:
@@ -504,7 +502,7 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 
 	msgED.SetWindowTextW(s);
 
-	// ?????
+	// Δここまで
 
 
 	mes_swing.Format(_T("平均時間: %lf s\r\nスコア: %lf"), swing_average * 32.0, swing_score);
