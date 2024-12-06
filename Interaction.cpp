@@ -89,14 +89,14 @@ std::string randomresult = RandomPick(3);
 
 extern double bpm_buf[2][MAXDATASIZE];
 
-//????????????????
+//�����ł��邱�Ƃ𔻒肷��Ǝ��֐�
 void jud_pour(int time) {
 	if ((stop_count >= 20) && (databuf[12][time] >= 120.0) && (databuf[12][time] <= 180.0)) {
 		pour = TRUE;
 	}
 }
 
-//????????stop_count?1????
+//�~�܂��Ă���Ƃ�stop_count��1���Z����
 void jud_stop(int time) {
 	if (databuf[16][time] <= 2000) {
 		stop_count++;
@@ -106,20 +106,20 @@ void jud_stop(int time) {
 	}
 }
 
-// ???
+// ����͂ŒǋL�����O���t�`��p���b�Z�[�W�n���h���[
 
-// ?????????????
+// ��ʃ��[�h���Ǘ�����\����
 enum Mode
 {
-	idol, // ?????????
-	shake, // ???????????
-	finish, // ?????????????
-	result // ????
+	idol, // �ҋ@��ʁi�U��O�j
+	shake, // �Q�[�����i�U���Ă���j
+	finish, // �I���i�J�N�e���𒍂���ʁj
+	result // ���ʔ��\
 };
 
 Mode mode = idol;
 
-// ?????????????
+// �U��n�߂����𔻒肷��֐�
 void start_shake(int time)
 {
 	if (databuf[16][time] >= 2000)
@@ -128,7 +128,7 @@ void start_shake(int time)
 	}
 }
 
-// ?????
+// �������܂�
 
 //注いでいることを判定する独自関数
 void jud_pour(int time) {
@@ -218,12 +218,14 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	for (i = 0; i < plot_count; i++) {
 		xx = (int)(xgain * (double)i);
 		yy = (int)(ygain * (-databuf[6][start + i] + GRAPH_Y_OFFSET));
+
 		// 領域外に描画しないようにクリッピング処理を行う
 		xx = (xx < 0) ? 0 : xx;
 		yy = (yy < 0) ? 0 : yy;
 		xx = (xx > (xsize - 1)) ? xsize - 1 : xx;
 		yy = (yy > (ysize - 1)) ? ysize - 1 : yy;
 		if (i == 0) {
+
 			myDC.MoveTo(xx, yy);	// ペンを座標( xx, yy)に移動させる（移動するだけなので、線は引いていない）
 		}
 		else {
@@ -231,29 +233,30 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 		}
 	}
 
-	// ???
-	// ????
-	// ????????????????????
+	// ���ǋL
+	// ��ʕ`��
+	// ��̃O���t�`��͍폜�܂��̓R�����g�A�E�g
 	switch (mode)
 	{
-		// ??????
+		// �U��O�̉��
 		case idol:
 			break;
 
-		// ?????????
+		// �U���Ă��鎞�̉��
 		case shake:
 			break;
 
-		// ????
+		// �������
 		case finish:
 			break;
 
-		// ?????
+		// ���ʂ̉��
 		case result:
 			break;
 	}
 
-	// ?????
+	// �������܂�
+
 
 	// グラフの描画はここまで
 
@@ -280,6 +283,7 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 		}
 	}
 	else {
+
 		start2 = datapoint; // 描画開始サンプル番号
 	}
 
@@ -321,12 +325,14 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	for (i = 0; i < plot_count2; i++) {
 		xx = (int)(xgain2 * (-databuf[12][start2 + i] + PHI_OFFSET));
 		yy = (int)(ygain2 * (databuf[11][start2 + i] + THETA_OFFSET));
+
 		// 領域外に描画しないようにクリッピング処理を行う
 		xx = (xx < 0) ? 0 : xx;
 		yy = (yy < 0) ? 0 : yy;
 		xx = (xx > (xsize - 1)) ? xsize - 1 : xx;
 		yy = (yy > (ysize - 1)) ? ysize - 1 : yy;
 		if (i == 0) {
+
 			myDC2.MoveTo(xx, yy);	// ペンを座標( xx, yy)に移動させる（移動するだけなので、線は引いていない）
 		}
 		else {
@@ -336,7 +342,7 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 
 	// グラフの描画はここまで
 
-	myPictDC2.BitBlt(0, 0, xsize2, ysize2, &myDC2, 0, 0, SRCCOPY); // ????????????myPictDC)?????????
+	myPictDC2.BitBlt(0, 0, xsize2, ysize2, &myDC2, 0, 0, SRCCOPY); // �o�b�t�@�����������ʁimyPictDC)�Ƀf�[�^��]������
 
 	myDC2.SelectObject(oldPen2);	// 以前のペンに戻しておく
 
@@ -350,11 +356,13 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 		s.Format(_T("Sample Count = %d"), start);
 	}
 	msgED.SetWindowTextW(s);
+
 	DeleteDC(myDC); // メモリバッファのデバイスコンテキストを解放する
 	DeleteObject(memBM); // 画像メモリの性質を表すビットマップを解放する
 
 	DeleteDC(myDC2);
 	DeleteObject(memBM2);
+
 
 	rf_interlock = 0; // 描画が完了したことをグローバル変数を介して伝える
 
@@ -366,6 +374,7 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	val = databuf[4][start];
 
 	AATL += abs(databuf[16][start]);
+
 
 	//1時間単位前の手首ひねり角との差の絶対値をsum_data_difに加算する
 	double wrist_def;
@@ -379,10 +388,11 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 
 	sample_count++;
 
+
 	//停止していることを判定
 	jud_stop(start);
 
-	//????????????????????????
+	//��莞�Ԉȏ�~�܂��Ă���Ƃ��p�����[�^�����Z�b�g
 	if (stop_count >= 20) {
 		dir = 0;
 		period = 0;
@@ -392,6 +402,7 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 		sum_theta_dif = 0;
 		sample_count = 0;
 	}
+
 
 	//注ぐ姿勢で一定時間止まっているとき注ぐフラグを立てる
 	jud_pour(start);
@@ -411,21 +422,22 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	//注ぐ姿勢で一定時間止まっているとき注ぐフラグを立てる
 	jud_pour(start);
 
-	// ???
-	// ??????????????????
+	// ���ǋL
+	// �U��n�߂���U���Ă���t���O�𗧂Ă�
 	start_shake(start);
 
 	if (shaking == TRUE && mode == idol)
 	{
-		mode = shake; // ???????????????
+		mode = shake; // �Q�[���J�n����U��n�߂���ʂ�
 	}
 
 	if (pour == TRUE && mode == shake)
 	{
-		mode = finish; // ????????????????
+		mode = finish; // �U���Ă����Ԃ��烊�U���g��ʂ�
 	}
 
-	// ?????
+	// �������܂�
+
 
 	//前腕姿勢角ｙの値から振り速度を求める
 	//dirが0の時振り下ろし方向、1の時振り上げ方向
@@ -469,8 +481,8 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	double theta_score = (theta_average - 10) * 10;
 	double whole_score = swing_score + theta_score;
 
-	// ???
-	// ??????????????????
+	// ���ǋL
+	// ��ʃ��[�h���G�f�B�b�g�{�b�N�X�ɕ\��
 	switch (mode)
 	{
 	case idol:
@@ -494,6 +506,7 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 
 	// ?????
 
+
 	mes_swing.Format(_T("平均時間: %lf s\r\nスコア: %lf"), swing_average * 32.0, swing_score);
 	mes_wrist.Format(_T("角度平均: %lf ?\r\nスコア: %lf"), theta_average, theta_score);
 	mes_result.Format(_T("総合スコア: %lf\r\nBPM: %lf\r\npour: %d"), whole_score, bpm_buf[0][start], pour);
@@ -501,6 +514,7 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 
 	msgED3.SetWindowTextW(mes_swing);
 	msgED4.SetWindowTextW(mes_result);
+
 
 	//オリジナルここまで
 
