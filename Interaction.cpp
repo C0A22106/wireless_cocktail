@@ -89,7 +89,7 @@ std::string randomresult = RandomPick(3);
 
 extern double bpm_buf[2][MAXDATASIZE];
 
-// 
+// 注いでいることを判定する独自関数
 void jud_pour(int time) {
 	if ((stop_count >= 20) && (databuf[12][time] >= 120.0) && (databuf[12][time] <= 180.0)) {
 		pour = TRUE;
