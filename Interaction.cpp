@@ -300,6 +300,8 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	DeleteDC(myDC2);
 	DeleteObject(memBM2);
 
+	// あ
+
 	rf_interlock = 0; // 描画が完了したことをグローバル変数を介して伝える
 
 	//以下オリジナル
