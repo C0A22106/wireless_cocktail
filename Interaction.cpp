@@ -11,8 +11,9 @@
 #include "random"
 #include "string"
 #include "vector"
-
-#include <mmsystem.h>
+#include "pch.h"
+#include "resource.h"
+#include <random>
 
 // MFC管理下にないグローバル変数への参照
 extern int rf_status; // ワイヤレス通信の実行状況を表す変数　0 ... 実行なし	1 ... 実行あり
@@ -55,39 +56,44 @@ clock_t start_time, end_time;
 BOOLEAN shaking, pour, stop, sound = FALSE;
 
 // ランダムピック
-std::string RandomPick(int shakeCount)
-{
-	// テーブル定義
-	std::vector<std::vector<std::string>> tables = {
-		{"カクテル", "ワイン", "ビール", "ウイスキー", "焼酎", "日本酒", "リキュール", "ノンアルコール"}, // テーブル1
-		{"イタリアン", "フレンチ", "和食", "中華", "韓国料理", "タイ料理", "インド料理", "アメリカン"},   // テーブル2
-		{"ステーキ", "寿司", "ラーメン", "カレー", "パスタ", "ピザ", "ハンバーガー", "お好み焼き"}       // テーブル3
-	};
+// カクテルのリストを定義
+struct Cocktail {
+	CString name;
+	CString imagePath;
+};
 
-	// テーブル選択ロジック
-	std::vector<std::string> selectedTable;
-	if (shakeCount <= 3) {
-		selectedTable = tables[0];
-	}
-	else if (shakeCount <= 6) {
-		selectedTable = tables[1];
-	}
-	else {
-		selectedTable = tables[2];
-	}
+Cocktail kakuteru[] = {
+	{ _T("モヒート"), _T("path/to/mojito.jpg") },
+	{ _T("ダイキリ"), _T("path/to/daiquiri.jpg") },
+	{ _T("マルガリータ"), _T("path/to/margarita.jpg") },
+	{ _T("カシスオレンジ"), _T("path/to/cassis_orange.jpg") },
+	{ _T("ファジーネーブル"), _T("path/to/fuzzy_navel.jpg") },
+	// 他のカクテルを追加...
+};
 
-	// ランダムでアイテムを選択
+const int numCocktails = sizeof(kakuteru) / sizeof(kakuteru[0]);
+
+// シェイク数を引数として受け取り、ランダムにカクテルを選択する関数
+Cocktail GetRandomCocktail(int shakeCount) {
+	// 乱数のシードを初期化
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_int_distribution<> dis(0, selectedTable.size() - 1);
-	std::string randomItem = selectedTable[dis(gen)];
+	std::uniform_int_distribution<> dis(0, shakeCount);
 
-	return randomItem;
+	// 0 から shakeCount までの乱数を生成
+	int randomIndex = dis(gen) % numCocktails;
+
+	// ランダムに選択されたカクテルの名前と画像パスを取得
+	Cocktail selectedCocktail = kakuteru[randomIndex];
+
+	return selectedCocktail;
 }
 
-std::string randomresult = RandomPick(3);
-
-
+// 使用例
+int shakeCount = 5; // シェイク数を指定
+Cocktail randomCocktail = GetRandomCocktail(shakeCount);
+CString name = randomCocktail.name;
+CString imagePath = randomCocktail.imagePath;
 
 extern double bpm_buf[2][MAXDATASIZE];
 
@@ -186,6 +192,7 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	else {
 		start = datapoint; // 描画開始サンプル番号
 	}
+
 
 	plot_count = graphspan; // 描画領域の全幅に相当するサンプル数（実際のデータサンプル数ではない）
 
@@ -504,7 +511,7 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	msgED3.SetWindowTextW(mes_swing);
 	msgED4.SetWindowTextW(mes_result);
 
-	
+
 	wav_play(1);
 	//オリジナルここまで
 
