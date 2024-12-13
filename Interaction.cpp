@@ -218,25 +218,31 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	// Δ追記
 	// 画面描画
 	// 上のグラフ描画は削除またはコメントアウト
+	 /* いらない子
 	switch (mode)
 	{
 		// 振る前の画面
 		case idol:
+			s.Format(_T("Screem Mode idol"));
 			break;
 
 		// 振っている時の画面
 		case shake:
+			s.Format(_T("Screem Mode shake"));
 			break;
 
 		// 注ぐ画面
 		case finish:
+			s.Format(_T("Screem Mode finish"));
 			break;
 
 		// 結果の画面
 		case result:
+			// 出来上がったカクテルの画像を真ん中にドン！
+			s.Format(_T("Screem Mode result"));
 			break;
 	}
-
+	*/
 	// Δここまで
 
 
@@ -415,7 +421,8 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 
 	if (pour == TRUE && mode == shake)
 	{
-		mode = finish; // 振っている状態からリザルト画面へ
+		// mode = finish; // 振っている状態からリザルト画面へ
+		mode = result; // 振っている状態からリザルト画面へ
 	}
 	// Δここまで
 
@@ -464,7 +471,7 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 
 	// 12/6Δ追記
 	// 画像の設定あれこれ
-
+	
 	//CClientDC myPictDC(&mPICT1); // Picture Controlに設定した変数（mPICT2）から描画用デバイスコンテキストを作る
 	//CRect myRect;
 	BITMAP bmp; // ビットマップのサイズ（幅、高さ）を調べるための変数（HBITMAPから直接得ることはできない）
@@ -498,7 +505,7 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 																	// ピクセル等倍になるため、必ずしもimg.bmpの全てが
 																	// 表示されるわけではない
 
-	StretchBlt(myPictDC, 0, 0, xsize, ysize, hMdc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY); // サイズ合わせの上で表示する
+	
 	// 描画先はmyPictDC (画面）、データの転送元は hMdc (バッファメモリ）
 	// 描画先の座標は (0, 0) - (xsize-1, ysize-1)
 	// 描画元の座標は (0, 0) - (img.bmpの幅-1, img.bmpの高さ-1)
@@ -507,21 +514,33 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 
 	// Δ追記
 	// 画面モードをエディットボックスに表示
+
+	// 画面をリセット
+	mPICT1.GetClientRect(myRect);	// PICT1のサイズ情報がmyRectに入る
+	myPictDC.FillSolidRect(myRect, RGB(255, 255, 255));	// myRectで示される四辺形を白で塗りつぶす
+
 	switch (mode)
 	{
 	case idol:
+		// 振る前
+		StretchBlt(myPictDC, xsize * 1 / 4, ysize * 1 / 4, xsize * 1 / 6, ysize * 1 / 4, hMdc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY); // サイズ合わせの上で表示する
 		s.Format(_T("Screem Mode idol"));
 		break;
 
 	case shake:
+		// 振っている
+		StretchBlt(myPictDC, xsize * 0 / 4, ysize * 1 / 4, xsize * 1 / 4, ysize * 1 / 4, hMdc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY); // サイズ合わせの上で表示する
 		s.Format(_T("Screem Mode shake"));
 		break;
 
 	case finish:
+		// 注いでいる途中の画像を表示するハズだった
 		s.Format(_T("Screem Mode finish"));
 		break;
 
 	case result:
+		// 出来上がったカクテルの画像を真ん中にドン！
+		StretchBlt(myPictDC, xsize * 1 / 4, ysize * 1 / 4, xsize * 2 / 4, ysize * 2 / 4, hMdc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY); // サイズ合わせの上で表示する
 		s.Format(_T("Screem Mode result"));
 		break;
 	}
@@ -536,7 +555,6 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	myDC.SelectObject(oldPen);	// 以前のペンに戻しておく
 
 	// Δここまで
-
 
 	mes_swing.Format(_T("平均時間: %lf s\r\nスコア: %lf"), swing_average * 32.0, swing_score);
 	mes_wrist.Format(_T("角度平均: %lf ?\r\nスコア: %lf"), theta_average, theta_score);
