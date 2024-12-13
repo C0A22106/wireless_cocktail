@@ -46,13 +46,14 @@ int period = 0;
 double val;
 int peak_timing = -1;
 double peak_val = 0.0;
-int stop_count;
+int stop_count = 0;
 double sum_swing_speed = 0;
 double sum_theta_dif = 0;
 int sample_count = 0;
 double AATL = 0;
 double BPM = 0;
 clock_t start_time, end_time;
+BOOLEAN shaking, pour, stop, sound = FALSE;
 
 // ランダムピック
 // カクテルのリストを定義
@@ -96,6 +97,68 @@ CString imagePath = randomCocktail.imagePath;
 
 extern double bpm_buf[2][MAXDATASIZE];
 
+// 注いでいることを判定する独自関数
+void jud_pour(int time) {
+	if ((stop_count >= 20) && (databuf[12][time] >= 120.0) && (databuf[12][time] <= 180.0)) {
+		pour = TRUE;
+	}
+}
+
+//止まっているときstop_countを1加算する
+void jud_stop(int time) {
+	if (databuf[16][time] <= 2000) {
+		stop_count++;
+	}
+	else {
+		stop_count = 0;
+	}
+}
+
+//ファイル名を引数としてwavサウンドファイルを再生する関数
+CString wav_play(int track) {
+	CString path; //ファイルパスを格納する
+
+	CString files[4] = { _T("MusMus-BGM-146.wav"), _T("街の道路.wav"), _T("シェイク音.wav"), _T("注ぐ音.wav") };
+	path = files[track];
+	path = _T("sounds/") + path;
+	if (sound == FALSE) {
+		PlaySound(path, NULL, SND_ASYNC); //非同期で音声を再生する
+		sound = TRUE; //音声が再生中であることを示すフラグを立てる
+	}
+
+	return path;
+}
+
+void wav_stop() {
+	if (sound == TRUE) {
+		PlaySound(NULL, NULL, SND_PURGE);
+		sound = FALSE;
+	}
+}
+
+// Δ追記
+// 画面モードを管理する構造体
+enum Mode
+{
+	idol, // 待機画面（振る前）
+	shake, // ゲーム中（振っている）
+	finish, // 終了（カクテルを注ぐ画面）
+	result // 結果発表
+};
+
+Mode mode = idol;
+
+// 振り始めた事を判定する関数
+void start_shake(int time)
+{
+	if (databuf[16][time] >= 2000)
+	{
+		shaking = TRUE;
+	}
+}
+
+// Δここまで
+
 // 手入力で追記したグラフ描画用メッセージハンドラー
 
 LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
@@ -130,6 +193,7 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 		start = datapoint; // 描画開始サンプル番号
 	}
 
+
 	plot_count = graphspan; // 描画領域の全幅に相当するサンプル数（実際のデータサンプル数ではない）
 
 	if((start + plot_count) > datasize){
@@ -154,6 +218,7 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	CPen myPen(PS_SOLID, 1, RGB(0, 0, 0)); // ペンの種類（SOLID：実線）、ペン幅（1ピクセル)、色（R, G, B)
 	CPen* oldPen = myDC.SelectObject(&myPen);	// ペンをmyPenに持ち替えると同時に、以前のペンをoldPenに記憶させる
 
+
 	// ここからグラフを描画する
 	// 描画開始サンプル番号　start
 	// 描画サンプル数　total
@@ -166,18 +231,45 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	for (i = 0; i < plot_count; i++) {
 		xx = (int)(xgain * (double)i);
 		yy = (int)(ygain * (-databuf[6][start + i] + GRAPH_Y_OFFSET));
+
 		// 領域外に描画しないようにクリッピング処理を行う
 		xx = (xx < 0) ? 0 : xx;
 		yy = (yy < 0) ? 0 : yy;
 		xx = (xx > (xsize - 1)) ? xsize - 1 : xx;
 		yy = (yy > (ysize - 1)) ? ysize - 1 : yy;
 		if (i == 0) {
+
 			myDC.MoveTo(xx, yy);	// ペンを座標( xx, yy)に移動させる（移動するだけなので、線は引いていない）
 		}
 		else {
 			myDC.LineTo(xx, yy);	// ペンを座標 ( xx, yy)に移動させながら線を引く
 		}
 	}
+
+	// Δ追記
+	// 画面描画
+	// 上のグラフ描画は削除またはコメントアウト
+	switch (mode)
+	{
+		// 振る前の画面
+		case idol:
+			break;
+
+		// 振っている時の画面
+		case shake:
+			break;
+
+		// 注ぐ画面
+		case finish:
+			break;
+
+		// 結果の画面
+		case result:
+			break;
+	}
+
+	// Δここまで
+
 
 	// グラフの描画はここまで
 
@@ -204,6 +296,7 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 		}
 	}
 	else {
+
 		start2 = datapoint; // 描画開始サンプル番号
 	}
 
@@ -226,9 +319,11 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	memBM2 = CreateCompatibleBitmap(myPictDC2, xsize2, ysize2);
 	SelectObject(myDC2, memBM2); // 画像メモリの属性をバッファメモリのデバイスコンテキストに対応づける
 
+
 	myDC2.FillSolidRect(myRect2, RGB(255, 255, 255)); // 矩形領域を白で塗りつぶす
 	CPen myPen2(PS_SOLID, 1, RGB(0, 0, 0)); // ペンの種類（SOLID：実線）、ペン幅（1ピクセル)、色（R, G, B)
 	CPen* oldPen2 = myDC2.SelectObject(&myPen2);	// ペンをmyPenに持ち替えると同時に、以前のペンをoldPenに記憶させる
+
 
 	// ここからグラフを描画する
 	// 描画開始サンプル番号　start
@@ -243,12 +338,14 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	for (i = 0; i < plot_count2; i++) {
 		xx = (int)(xgain2 * (-databuf[12][start2 + i] + PHI_OFFSET));
 		yy = (int)(ygain2 * (databuf[11][start2 + i] + THETA_OFFSET));
+
 		// 領域外に描画しないようにクリッピング処理を行う
 		xx = (xx < 0) ? 0 : xx;
 		yy = (yy < 0) ? 0 : yy;
 		xx = (xx > (xsize - 1)) ? xsize - 1 : xx;
 		yy = (yy > (ysize - 1)) ? ysize - 1 : yy;
 		if (i == 0) {
+
 			myDC2.MoveTo(xx, yy);	// ペンを座標( xx, yy)に移動させる（移動するだけなので、線は引いていない）
 		}
 		else {
@@ -258,7 +355,7 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 
 	// グラフの描画はここまで
 
-	myPictDC2.BitBlt(0, 0, xsize2, ysize2, &myDC2, 0, 0, SRCCOPY); // バッファメモリから画面（myPictDC)にデータを転送する
+	myPictDC2.BitBlt(0, 0, xsize2, ysize2, &myDC2, 0, 0, SRCCOPY); // �o�b�t�@�����������ʁimyPictDC)�Ƀf�[�^��]������
 
 	myDC2.SelectObject(oldPen2);	// 以前のペンに戻しておく
 
@@ -272,11 +369,13 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 		s.Format(_T("Sample Count = %d"), start);
 	}
 	msgED.SetWindowTextW(s);
+
 	DeleteDC(myDC); // メモリバッファのデバイスコンテキストを解放する
 	DeleteObject(memBM); // 画像メモリの性質を表すビットマップを解放する
 
 	DeleteDC(myDC2);
 	DeleteObject(memBM2);
+
 
 	rf_interlock = 0; // 描画が完了したことをグローバル変数を介して伝える
 
@@ -289,12 +388,6 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 
 	AATL += abs(databuf[16][start]);
 
-	if (databuf[16][start] <= 2000) {
-		stop_count++;
-	}
-	else {
-		stop_count = 0;
-	}
 
 	//1時間単位前の手首ひねり角との差の絶対値をsum_data_difに加算する
 	double wrist_def;
@@ -306,9 +399,13 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 		sum_theta_dif += wrist_def;
 	}
 
-
 	sample_count++;
 
+
+	//停止していることを判定
+	jud_stop(start);
+
+	//一定時間以上止まっているときパラメータをリセット
 	if (stop_count >= 20) {
 		dir = 0;
 		period = 0;
@@ -318,6 +415,24 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 		sum_theta_dif = 0;
 		sample_count = 0;
 	}
+
+	//注ぐ姿勢で一定時間止まっているとき注ぐフラグを立てる
+	jud_pour(start);
+
+	// Δ追記
+	// 振り始めたら振っているフラグを立てる
+	start_shake(start);
+
+	if (shaking == TRUE && mode == idol)
+	{
+		mode = shake; // ゲーム開始から振り始めた画面へ
+	}
+
+	if (pour == TRUE && mode == shake)
+	{
+		mode = finish; // 振っている状態からリザルト画面へ
+	}
+	// Δここまで
 
 
 	//前腕姿勢角ｙの値から振り速度を求める
@@ -362,15 +477,42 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	double theta_score = (theta_average - 10) * 10;
 	double whole_score = swing_score + theta_score;
 
-	mes_swing.Format(_T("平均時間: %lf s\r\nスコア: %lf"), swing_average * 32.0, swing_score);
-	mes_wrist.Format(_T("角度平均: %lf 度\r\nスコア: %lf"), theta_average, theta_score);
-    mes_result.Format(_T("総合スコア: %lf\r\nBPM: %lf\r\nbpm: %lf %%\r\n"), whole_score, bpm_buf[0][start], BPM);
-	mes_random.Format(_T("おすすめ: %s"), randomresult.c_str());
+	// Δ追記
+	// 画面モードをエディットボックスに表示
+	switch (mode)
+	{
+	case idol:
+		s.Format(_T("Screem Mode idol"));
+		break;
 
-    msgED2.SetWindowTextW(mes_wrist);
+	case shake:
+		s.Format(_T("Screem Mode shake"));
+		break;
+
+	case finish:
+		s.Format(_T("Screem Mode finish"));
+		break;
+
+	case result:
+		s.Format(_T("Screem Mode result"));
+		break;
+	}
+
+	msgED.SetWindowTextW(s);
+
+	// Δここまで
+
+
+	mes_swing.Format(_T("平均時間: %lf s\r\nスコア: %lf"), swing_average * 32.0, swing_score);
+	mes_wrist.Format(_T("角度平均: %lf ?\r\nスコア: %lf"), theta_average, theta_score);
+	mes_result.Format(_T("総合スコア: %lf\r\nBPM: %lf\r\npour: %d"), whole_score, bpm_buf[0][start], pour);
+	msgED2.SetWindowTextW(mes_wrist);
+
 	msgED3.SetWindowTextW(mes_swing);
 	msgED4.SetWindowTextW(mes_result);
 
+
+	wav_play(1);
 	//オリジナルここまで
 
 	return TRUE; // LRESULT型関数は論理値をリターンすることになっている
