@@ -109,13 +109,18 @@ void jud_stop(int time) {
 }
 
 //ファイル名を引数としてwavサウンドファイルを再生する関数
-void wav_play(CString name) {
-	CString file_name;
-	file_name = _T("sounds/") + name;
+CString wav_play(int track) {
+	CString path; //ファイルパスを格納する
+
+	CString files[4] = { _T("MusMus-BGM-146.wav"), _T("街の道路.wav"), _T("シェイク音.wav"), _T("注ぐ音.wav") };
+	path = files[track];
+	path = _T("sounds/") + path;
 	if (sound == FALSE) {
-		PlaySound(file_name, NULL, SND_ASYNC);
-		sound = TRUE;
+		PlaySound(path, NULL, SND_ASYNC); //非同期で音声を再生する
+		sound = TRUE; //音声が再生中であることを示すフラグを立てる
 	}
+
+	return path;
 }
 
 void wav_stop() {
@@ -418,6 +423,7 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 		sum_swing_speed = 0;
 		sum_theta_dif = 0;
 		sample_count = 0;
+		wav_stop();
 	}
 
 	//注ぐ姿勢で一定時間止まっているとき注ぐフラグを立てる
@@ -515,10 +521,8 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	msgED3.SetWindowTextW(mes_swing);
 	msgED4.SetWindowTextW(mes_result);
 
-	char files[4][256] = { "MusMus-BGM-146.wav", "街の道路.wav", "シェイク音.wav", "注ぐ音.wav"};
-	CString name;
-	name = files[0];
-	wav_play(name);
+	
+	wav_play(1);
 	//オリジナルここまで
 
 	return TRUE; // LRESULT型関数は論理値をリターンすることになっている
