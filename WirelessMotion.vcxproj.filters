@@ -62,5 +62,8 @@
     <Image Include="res\WirelessMotion.ico">
       <Filter>リソース ファイル</Filter>
     </Image>
+    <Image Include="image\shake.bmp">
+      <Filter>リソース ファイル</Filter>
+    </Image>
   </ItemGroup>
 </Project>

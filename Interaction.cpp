@@ -482,12 +482,13 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	xsize = myRect.Width();	// PICT2の幅
 	ysize = myRect.Height(); // PICT2の高さ
 
+	//HBITMAP hbmp = (HBITMAP)LoadImage(NULL, _T("image/img.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 	HBITMAP hbmp = (HBITMAP)LoadImage(NULL, _T("image/img.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 
 	// img.bmpという名前のファイルをHBITMAP型データとして読み込む
 	// 画像ファイルは実行ファイルと同じフォルダに入っている必要がある
 	if (hbmp == NULL) {
-		msgED.SetWindowTextW(_T("img.bmp not found"));	// img.bmpが見つからなかった
+		msgED.SetWindowTextW(_T("shaker.bmp not found"));	// img.bmpが見つからなかった
 		// return;
 	}
 
@@ -516,32 +517,32 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	// 画面モードをエディットボックスに表示
 
 	// 画面をリセット
-	mPICT1.GetClientRect(myRect);	// PICT1のサイズ情報がmyRectに入る
-	myPictDC.FillSolidRect(myRect, RGB(255, 255, 255));	// myRectで示される四辺形を白で塗りつぶす
+	//mPICT1.GetClientRect(myRect);	// PICT1のサイズ情報がmyRectに入る
+	//myPictDC.FillSolidRect(myRect, RGB(255, 255, 255));	// myRectで示される四辺形を白で塗りつぶす
 
 	switch (mode)
 	{
 	case idol:
 		// 振る前
 		StretchBlt(myPictDC, xsize * 1 / 4, ysize * 1 / 4, xsize * 1 / 6, ysize * 1 / 4, hMdc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY); // サイズ合わせの上で表示する
-		s.Format(_T("Screem Mode idol"));
+		//s.Format(_T("Screem Mode idol"));
 		break;
 
 	case shake:
 		// 振っている
 		StretchBlt(myPictDC, xsize * 0 / 4, ysize * 1 / 4, xsize * 1 / 4, ysize * 1 / 4, hMdc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY); // サイズ合わせの上で表示する
-		s.Format(_T("Screem Mode shake"));
+		//s.Format(_T("Screem Mode shake"));
 		break;
 
 	case finish:
 		// 注いでいる途中の画像を表示するハズだった
-		s.Format(_T("Screem Mode finish"));
+		//s.Format(_T("Screem Mode finish"));
 		break;
 
 	case result:
 		// 出来上がったカクテルの画像を真ん中にドン！
 		StretchBlt(myPictDC, xsize * 1 / 4, ysize * 1 / 4, xsize * 2 / 4, ysize * 2 / 4, hMdc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY); // サイズ合わせの上で表示する
-		s.Format(_T("Screem Mode result"));
+		//s.Format(_T("Screem Mode result"));
 		break;
 	}
 
