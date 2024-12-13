@@ -751,6 +751,7 @@ BOOL CWirelessMotionDlg::OnInitDialog()
 
 	//以下独自
 	midiOutOpen(&hMIDI, MIDI_MAPPER, 0, 0, 0); // ここでMIDIデバイスを初期化することで遅延を軽減する
+	PostMessage((WM_RCV + 1), WPARAM(NULL), LPARAM(NULL));
 
 	Initialize();
 
