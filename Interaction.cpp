@@ -409,23 +409,6 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 		sample_count = 0;
 	}
 
-
-	//注ぐ姿勢で一定時間止まっているとき注ぐフラグを立てる
-	jud_pour(start);
-
-
-	//一定時間以上止まっているときパラメータをリセット
-	if (stop_count >= 20) {
-		dir = 0;
-		period = 0;
-		peak_timing = -1;
-		peak_val = 0.0;
-		sum_swing_speed = 0;
-		sum_theta_dif = 0;
-		sample_count = 0;
-		wav_stop();
-	}
-
 	//注ぐ姿勢で一定時間止まっているとき注ぐフラグを立てる
 	jud_pour(start);
 
