@@ -12,6 +12,8 @@
 #include "string"
 #include "vector"
 
+#include <mmsystem.h>
+
 // MFC管理下にないグローバル変数への参照
 extern int rf_status; // ワイヤレス通信の実行状況を表す変数　0 ... 実行なし	1 ... 実行あり
 extern int rf_firsttime; // パケットエラーの計数開始時のみ1になるフラフ
@@ -50,7 +52,7 @@ int sample_count = 0;
 double AATL = 0;
 double BPM = 0;
 clock_t start_time, end_time;
-BOOLEAN shaking, pour, stop = FALSE;
+BOOLEAN shaking, pour, stop, sound = FALSE;
 
 // ランダムピック
 std::string RandomPick(int shakeCount)
@@ -103,6 +105,28 @@ void jud_stop(int time) {
 	}
 	else {
 		stop_count = 0;
+	}
+}
+
+//ファイル名を引数としてwavサウンドファイルを再生する関数
+CString wav_play(int track) {
+	CString path; //ファイルパスを格納する
+
+	CString files[4] = { _T("MusMus-BGM-146.wav"), _T("街の道路.wav"), _T("シェイク音.wav"), _T("注ぐ音.wav") };
+	path = files[track];
+	path = _T("sounds/") + path;
+	if (sound == FALSE) {
+		PlaySound(path, NULL, SND_ASYNC); //非同期で音声を再生する
+		sound = TRUE; //音声が再生中であることを示すフラグを立てる
+	}
+
+	return path;
+}
+
+void wav_stop() {
+	if (sound == TRUE) {
+		PlaySound(NULL, NULL, SND_PURGE);
+		sound = FALSE;
 	}
 }
 
@@ -399,6 +423,7 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 		sum_swing_speed = 0;
 		sum_theta_dif = 0;
 		sample_count = 0;
+		wav_stop();
 	}
 
 	//注ぐ姿勢で一定時間止まっているとき注ぐフラグを立てる
@@ -496,7 +521,8 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	msgED3.SetWindowTextW(mes_swing);
 	msgED4.SetWindowTextW(mes_result);
 
-
+	
+	wav_play(1);
 	//オリジナルここまで
 
 	return TRUE; // LRESULT型関数は論理値をリターンすることになっている
