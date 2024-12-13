@@ -417,12 +417,20 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	if (shaking == TRUE && mode == idol)
 	{
 		mode = shake; // ゲーム開始から振り始めた画面へ
+
+		// 画面をリセット
+		mPICT1.GetClientRect(myRect);	// PICT1のサイズ情報がmyRectに入る
+		myPictDC.FillSolidRect(myRect, RGB(255, 255, 255));	// myRectで示される四辺形を白で塗りつぶす
 	}
 
 	if (pour == TRUE && mode == shake)
 	{
 		// mode = finish; // 振っている状態からリザルト画面へ
 		mode = result; // 振っている状態からリザルト画面へ
+
+		// 画面をリセット
+		mPICT1.GetClientRect(myRect);	// PICT1のサイズ情報がmyRectに入る
+		myPictDC.FillSolidRect(myRect, RGB(255, 255, 255));	// myRectで示される四辺形を白で塗りつぶす
 	}
 	// Δここまで
 
@@ -471,6 +479,10 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 
 	// 12/6Δ追記
 	// 画像の設定あれこれ
+
+	// 画面をリセット
+	//mPICT1.GetClientRect(myRect);	// PICT1のサイズ情報がmyRectに入る
+	//myPictDC.FillSolidRect(myRect, RGB(255, 255, 255));	// myRectで示される四辺形を白で塗りつぶす
 	
 	//CClientDC myPictDC(&mPICT1); // Picture Controlに設定した変数（mPICT2）から描画用デバイスコンテキストを作る
 	//CRect myRect;
@@ -482,55 +494,54 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	xsize = myRect.Width();	// PICT2の幅
 	ysize = myRect.Height(); // PICT2の高さ
 
-	//HBITMAP hbmp = (HBITMAP)LoadImage(NULL, _T("image/img.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-	HBITMAP hbmp = (HBITMAP)LoadImage(NULL, _T("image/img.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+	HBITMAP hbmp = 0;
+	HDC hMdc = CreateCompatibleDC(myPictDC); // PICT2に描画するためのデバイスコンテキストを作る
 
-	// img.bmpという名前のファイルをHBITMAP型データとして読み込む
-	// 画像ファイルは実行ファイルと同じフォルダに入っている必要がある
-	if (hbmp == NULL) {
-		msgED.SetWindowTextW(_T("shaker.bmp not found"));	// img.bmpが見つからなかった
-		// return;
+	// 画像の読み込み
+	switch (mode)
+	{
+	case idol:
+		// 待機画面の画像
+		hbmp = (HBITMAP)LoadImage(NULL, _T("image/aaa.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);;
+		break;
+
+	case shake:
+		// シェイクの画像
+		hbmp = (HBITMAP)LoadImage(NULL, _T("image/img.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);;
+		break;
+
+	case result:
+		// 出来上がったカクテルの画像
+		hbmp = (HBITMAP)LoadImage(NULL, _T("image/aaa.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);;
+		break;
 	}
 
-	HDC hMdc = CreateCompatibleDC(myPictDC); // PICT2に描画するためのデバイスコンテキストを作る
 	SelectObject(hMdc, hbmp);	// 画像ファイルのフォーマットを踏襲させる
 	SelectObject(myPictDC, hbmp); // 画像描画DCの属性をビットマップに対応づける
 
 	GetObject(hbmp, sizeof(BITMAP), &bmp); // HBITMAP型画像データからBITMAP型データへの読み替えを行う
 
-	s.Format(_T("Size of img.bmp : x = %d y = %d Size of Picture box : width = %d, height = %d"),
-		bmp.bmWidth, bmp.bmHeight, xsize, ysize);
-	msgED.SetWindowTextW(s);	// img.bpmのピクセル数を画面上に表示する
+	SelectObject(hMdc, hbmp);	// 画像ファイルのフォーマットを踏襲させる
+	SelectObject(myPictDC, hbmp); // 画像描画DCの属性をビットマップに対応づける
 
-	//	BitBlt( myPictDC, 0, 0, xsize, ysize, hMdc, 0, 0, SRCCOPY);	// img.bmpをそのまま画面に表示する
-																	// ピクセル等倍になるため、必ずしもimg.bmpの全てが
-																	// 表示されるわけではない
-
-	
-	// 描画先はmyPictDC (画面）、データの転送元は hMdc (バッファメモリ）
-	// 描画先の座標は (0, 0) - (xsize-1, ysize-1)
-	// 描画元の座標は (0, 0) - (img.bmpの幅-1, img.bmpの高さ-1)
-	// SRCCOPYモードでは画像データをそのまま送る
-	// img.bmp（画像ファイル）のサイズとピクチャーコントロールのサイズが違っていても、強制的にimg.bmpをボックス内にはめ込む
+	GetObject(hbmp, sizeof(BITMAP), &bmp); // HBITMAP型画像データからBITMAP型データへの読み替えを行う
 
 	// Δ追記
 	// 画面モードをエディットボックスに表示
-
-	// 画面をリセット
-	//mPICT1.GetClientRect(myRect);	// PICT1のサイズ情報がmyRectに入る
-	//myPictDC.FillSolidRect(myRect, RGB(255, 255, 255));	// myRectで示される四辺形を白で塗りつぶす
 
 	switch (mode)
 	{
 	case idol:
 		// 振る前
-		StretchBlt(myPictDC, xsize * 1 / 4, ysize * 1 / 4, xsize * 1 / 6, ysize * 1 / 4, hMdc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY); // サイズ合わせの上で表示する
+
+		StretchBlt(myPictDC, xsize * 0 / 4, ysize * 0 / 4, xsize * 4 / 4, ysize * 4 / 4, hMdc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY); // サイズ合わせの上で表示する
 		//s.Format(_T("Screem Mode idol"));
 		break;
 
 	case shake:
 		// 振っている
-		StretchBlt(myPictDC, xsize * 0 / 4, ysize * 1 / 4, xsize * 1 / 4, ysize * 1 / 4, hMdc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY); // サイズ合わせの上で表示する
+
+		StretchBlt(myPictDC, xsize * 1 / 4, ysize * 1 / 4, xsize * 2 / 4, ysize * 2 / 4, hMdc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY); // サイズ合わせの上で表示する
 		//s.Format(_T("Screem Mode shake"));
 		break;
 
@@ -541,10 +552,15 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 
 	case result:
 		// 出来上がったカクテルの画像を真ん中にドン！
+
 		StretchBlt(myPictDC, xsize * 1 / 4, ysize * 1 / 4, xsize * 2 / 4, ysize * 2 / 4, hMdc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY); // サイズ合わせの上で表示する
 		//s.Format(_T("Screem Mode result"));
 		break;
 	}
+
+	s.Format(_T("Size of img.bmp : x = %d y = %d Size of Picture box : width = %d, height = %d"),
+		bmp.bmWidth, bmp.bmHeight, xsize, ysize);
+	msgED.SetWindowTextW(s);	// img.bpmのピクセル数を画面上に表示する
 
 	DeleteDC(hMdc);	// img.bmp用に作ったデバイスコンテキストを削除する
 	DeleteObject(hbmp); // img.bmp用に作ったバッファメモリ（HBITMAP型）を削除する
