@@ -219,63 +219,69 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	CPen* oldPen = myDC.SelectObject(&myPen);	// ペンをmyPenに持ち替えると同時に、以前のペンをoldPenに記憶させる
 
 
-	// ここからグラフを描画する
-	// 描画開始サンプル番号　start
-	// 描画サンプル数　total
-	// X軸描画時の拡大縮小係数　xgain (double)
-	// Y軸描画時の拡大縮小係数　ygain (double)
-	// Y軸データのゼロ点オフセット　OFFSET (double)
+	//// ここからグラフを描画する
+	//// 描画開始サンプル番号　start
+	//// 描画サンプル数　total
+	//// X軸描画時の拡大縮小係数　xgain (double)
+	//// Y軸描画時の拡大縮小係数　ygain (double)
+	//// Y軸データのゼロ点オフセット　OFFSET (double)
 
 	int i, xx, yy;
 
-	for (i = 0; i < plot_count; i++) {
-		xx = (int)(xgain * (double)i);
-		yy = (int)(ygain * (-databuf[6][start + i] + GRAPH_Y_OFFSET));
+	//for (i = 0; i < plot_count; i++) {
+	//	xx = (int)(xgain * (double)i);
+	//	yy = (int)(ygain * (-databuf[6][start + i] + GRAPH_Y_OFFSET));
 
-		// 領域外に描画しないようにクリッピング処理を行う
-		xx = (xx < 0) ? 0 : xx;
-		yy = (yy < 0) ? 0 : yy;
-		xx = (xx > (xsize - 1)) ? xsize - 1 : xx;
-		yy = (yy > (ysize - 1)) ? ysize - 1 : yy;
-		if (i == 0) {
+	//	// 領域外に描画しないようにクリッピング処理を行う
+	//	xx = (xx < 0) ? 0 : xx;
+	//	yy = (yy < 0) ? 0 : yy;
+	//	xx = (xx > (xsize - 1)) ? xsize - 1 : xx;
+	//	yy = (yy > (ysize - 1)) ? ysize - 1 : yy;
+	//	if (i == 0) {
 
-			myDC.MoveTo(xx, yy);	// ペンを座標( xx, yy)に移動させる（移動するだけなので、線は引いていない）
-		}
-		else {
-			myDC.LineTo(xx, yy);	// ペンを座標 ( xx, yy)に移動させながら線を引く
-		}
-	}
+	//		myDC.MoveTo(xx, yy);	// ペンを座標( xx, yy)に移動させる（移動するだけなので、線は引いていない）
+	//	}
+	//	else {
+	//		myDC.LineTo(xx, yy);	// ペンを座標 ( xx, yy)に移動させながら線を引く
+	//	}
+	//}
 
 	// Δ追記
 	// 画面描画
 	// 上のグラフ描画は削除またはコメントアウト
+	 /* いらない子
 	switch (mode)
 	{
 		// 振る前の画面
 		case idol:
+			s.Format(_T("Screem Mode idol"));
 			break;
 
 		// 振っている時の画面
 		case shake:
+			s.Format(_T("Screem Mode shake"));
 			break;
 
 		// 注ぐ画面
 		case finish:
+			s.Format(_T("Screem Mode finish"));
 			break;
 
 		// 結果の画面
 		case result:
+			// 出来上がったカクテルの画像を真ん中にドン！
+			s.Format(_T("Screem Mode result"));
 			break;
 	}
-
+	*/
 	// Δここまで
 
 
 	// グラフの描画はここまで
 
-	myPictDC.BitBlt(0, 0, xsize, ysize, &myDC, 0, 0, SRCCOPY); // バッファメモリから画面（myPictDC)にデータを転送する
+	//myPictDC.BitBlt(0, 0, xsize, ysize, &myDC, 0, 0, SRCCOPY); // バッファメモリから画面（myPictDC)にデータを転送する
 
-	myDC.SelectObject(oldPen);	// 以前のペンに戻しておく
+	//myDC.SelectObject(oldPen);	// 以前のペンに戻しておく
 
 	// 軌道ダイアグラムの描画
 	// Jun. 26, 2024
@@ -426,11 +432,20 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	if (shaking == TRUE && mode == idol)
 	{
 		mode = shake; // ゲーム開始から振り始めた画面へ
+
+		// 画面をリセット
+		mPICT1.GetClientRect(myRect);	// PICT1のサイズ情報がmyRectに入る
+		myPictDC.FillSolidRect(myRect, RGB(255, 255, 255));	// myRectで示される四辺形を白で塗りつぶす
 	}
 
 	if (pour == TRUE && mode == shake)
 	{
-		mode = finish; // 振っている状態からリザルト画面へ
+		// mode = finish; // 振っている状態からリザルト画面へ
+		mode = result; // 振っている状態からリザルト画面へ
+
+		// 画面をリセット
+		mPICT1.GetClientRect(myRect);	// PICT1のサイズ情報がmyRectに入る
+		myPictDC.FillSolidRect(myRect, RGB(255, 255, 255));	// myRectで示される四辺形を白で塗りつぶす
 	}
 	// Δここまで
 
@@ -477,31 +492,101 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	double theta_score = (theta_average - 10) * 10;
 	double whole_score = swing_score + theta_score;
 
-	// Δ追記
-	// 画面モードをエディットボックスに表示
+	// 12/6Δ追記
+	// 画像の設定あれこれ
+
+	// 画面をリセット
+	//mPICT1.GetClientRect(myRect);	// PICT1のサイズ情報がmyRectに入る
+	//myPictDC.FillSolidRect(myRect, RGB(255, 255, 255));	// myRectで示される四辺形を白で塗りつぶす
+	
+	//CClientDC myPictDC(&mPICT1); // Picture Controlに設定した変数（mPICT2）から描画用デバイスコンテキストを作る
+	//CRect myRect;
+	BITMAP bmp; // ビットマップのサイズ（幅、高さ）を調べるための変数（HBITMAPから直接得ることはできない）
+	//CString s; // System Messageに表示するための文字列用CString型オブジェクト
+	//int xsize, ysize; // 画面上への描画サイズ
+
+	mPICT1.GetClientRect(myRect); // PICT2の画面上でのサイズ情報を取得する
+	xsize = myRect.Width();	// PICT2の幅
+	ysize = myRect.Height(); // PICT2の高さ
+
+	HBITMAP hbmp = 0;
+	HDC hMdc = CreateCompatibleDC(myPictDC); // PICT2に描画するためのデバイスコンテキストを作る
+
+	// 画像の読み込み
 	switch (mode)
 	{
 	case idol:
-		s.Format(_T("Screem Mode idol"));
+		// 待機画面の画像
+		hbmp = (HBITMAP)LoadImage(NULL, _T("image/aaa.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);;
 		break;
 
 	case shake:
-		s.Format(_T("Screem Mode shake"));
-		break;
-
-	case finish:
-		s.Format(_T("Screem Mode finish"));
+		// シェイクの画像
+		hbmp = (HBITMAP)LoadImage(NULL, _T("image/img.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);;
 		break;
 
 	case result:
-		s.Format(_T("Screem Mode result"));
+		// 出来上がったカクテルの画像
+		hbmp = (HBITMAP)LoadImage(NULL, _T("image/aaa.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);;
 		break;
 	}
 
+	SelectObject(hMdc, hbmp);	// 画像ファイルのフォーマットを踏襲させる
+	SelectObject(myPictDC, hbmp); // 画像描画DCの属性をビットマップに対応づける
+
+	GetObject(hbmp, sizeof(BITMAP), &bmp); // HBITMAP型画像データからBITMAP型データへの読み替えを行う
+
+	SelectObject(hMdc, hbmp);	// 画像ファイルのフォーマットを踏襲させる
+	SelectObject(myPictDC, hbmp); // 画像描画DCの属性をビットマップに対応づける
+
+	GetObject(hbmp, sizeof(BITMAP), &bmp); // HBITMAP型画像データからBITMAP型データへの読み替えを行う
+
+	// Δ追記
+	// 画面モードをエディットボックスに表示
+
+	switch (mode)
+	{
+	case idol:
+		// 振る前
+
+		StretchBlt(myPictDC, xsize * 0 / 4, ysize * 0 / 4, xsize * 4 / 4, ysize * 4 / 4, hMdc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY); // サイズ合わせの上で表示する
+		//s.Format(_T("Screem Mode idol"));
+		break;
+
+	case shake:
+		// 振っている
+
+		StretchBlt(myPictDC, xsize * 1 / 4, ysize * 1 / 4, xsize * 2 / 4, ysize * 2 / 4, hMdc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY); // サイズ合わせの上で表示する
+		//s.Format(_T("Screem Mode shake"));
+		break;
+
+	case finish:
+		// 注いでいる途中の画像を表示するハズだった
+		//s.Format(_T("Screem Mode finish"));
+		break;
+
+	case result:
+		// 出来上がったカクテルの画像を真ん中にドン！
+
+		StretchBlt(myPictDC, xsize * 1 / 4, ysize * 1 / 4, xsize * 2 / 4, ysize * 2 / 4, hMdc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY); // サイズ合わせの上で表示する
+		//s.Format(_T("Screem Mode result"));
+		break;
+	}
+
+	s.Format(_T("Size of img.bmp : x = %d y = %d Size of Picture box : width = %d, height = %d"),
+		bmp.bmWidth, bmp.bmHeight, xsize, ysize);
+	msgED.SetWindowTextW(s);	// img.bpmのピクセル数を画面上に表示する
+
+	DeleteDC(hMdc);	// img.bmp用に作ったデバイスコンテキストを削除する
+	DeleteObject(hbmp); // img.bmp用に作ったバッファメモリ（HBITMAP型）を削除する
+
 	msgED.SetWindowTextW(s);
 
-	// Δここまで
+	myPictDC.BitBlt(0, 0, xsize, ysize, &myDC, 0, 0, SRCCOPY); // バッファメモリから画面（myPictDC)にデータを転送する
 
+	myDC.SelectObject(oldPen);	// 以前のペンに戻しておく
+
+	// Δここまで
 
 	mes_swing.Format(_T("平均時間: %lf s\r\nスコア: %lf"), swing_average * 32.0, swing_score);
 	mes_wrist.Format(_T("角度平均: %lf ?\r\nスコア: %lf"), theta_average, theta_score);
