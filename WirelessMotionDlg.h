@@ -58,4 +58,5 @@ public:
 	CEdit msgED2;
 	CEdit msgED3;
 	CEdit msgED4;
+	afx_msg void OnStnClickedPict1();
 };
