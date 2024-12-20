@@ -14,6 +14,7 @@
 #include "pch.h"
 #include "resource.h"
 #include <random>
+#include <mmsystem.h>
 
 // MFC管理下にないグローバル変数への参照
 extern int rf_status; // ワイヤレス通信の実行状況を表す変数　0 ... 実行なし	1 ... 実行あり
@@ -498,7 +499,7 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	// 画面をリセット
 	//mPICT1.GetClientRect(myRect);	// PICT1のサイズ情報がmyRectに入る
 	//myPictDC.FillSolidRect(myRect, RGB(255, 255, 255));	// myRectで示される四辺形を白で塗りつぶす
-	
+
 	//CClientDC myPictDC(&mPICT1); // Picture Controlに設定した変数（mPICT2）から描画用デバイスコンテキストを作る
 	//CRect myRect;
 	BITMAP bmp; // ビットマップのサイズ（幅、高さ）を調べるための変数（HBITMAPから直接得ることはできない）
