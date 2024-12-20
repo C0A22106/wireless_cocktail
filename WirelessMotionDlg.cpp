@@ -700,6 +700,7 @@ BEGIN_MESSAGE_MAP(CWirelessMotionDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON6, &CWirelessMotionDlg::OnBnClickedButton6)
 	ON_BN_CLICKED(IDC_BUTTON7, &CWirelessMotionDlg::OnBnClickedButton7)
 	ON_WM_TIMER()
+	ON_STN_CLICKED(IDC_PICT1, &CWirelessMotionDlg::OnStnClickedPict1)
 END_MESSAGE_MAP()
 
 
@@ -1243,4 +1244,9 @@ void CWirelessMotionDlg::OnTimer(UINT_PTR nIDEvent)
 	}
 
 	CDialogEx::OnTimer(nIDEvent); // Visual Studioで自動的に生成されているコード
+}
+
+void CWirelessMotionDlg::OnStnClickedPict1()
+{
+	// TODO: ここにコントロール通知ハンドラー コードを追加します。
 }

@@ -64,11 +64,62 @@ struct Cocktail {
 };
 
 Cocktail kakuteru[] = {
-	{ _T("モヒート"), _T("path/to/mojito.jpg") },
-	{ _T("ダイキリ"), _T("path/to/daiquiri.jpg") },
-	{ _T("マルガリータ"), _T("path/to/margarita.jpg") },
-	{ _T("カシスオレンジ"), _T("path/to/cassis_orange.jpg") },
-	{ _T("ファジーネーブル"), _T("path/to/fuzzy_navel.jpg") },
+	{ _T("カシスオレンジ"), _T("image/CassisOrange.bmp") },
+	{ _T("ファジーネーブル"), _T("image/FuzzyNavel.bmp") },
+	{ _T("ディタオレンジ"), _T("image/DitaOrange.bmp") },
+	{ _T("ピーチツリーフィズ"), _T("image/PeachTreeFizz.bmp") },
+	{ _T("ハリケーン"), _T("image/Hurricane.bmp") },
+	{ _T("コスモポリタン"), _T("image/Cosmopolitan.bmp") },
+	{ _T("ミモザ"), _T("image/Mimosa.bmp") },
+	{ _T("カルーアミルク"), _T("image/KahluaMilk.bmp") },
+	{ _T("アレキサンダー"), _T("image/Alexander.bmp") },
+	{ _T("オーロラ"), _T("image/Aurora.bmp") },
+	{ _T("ニューヨーク"), _T("image/NewYork.bmp") },
+	{ _T("チャイナブルー"), _T("image/ChinaBlue.bmp") },
+	{ _T("ピーチウーロン"), _T("image/PeachOolong.bmp") },
+	{ _T("ブルームーン"), _T("image/BlueMoon.bmp") },
+	{ _T("マリブコーク"), _T("image/MalibuCoke.bmp") },
+	{ _T("キティ"), _T("image/Kitty.bmp") },
+	{ _T("グラスホッパー"), _T("image/Grasshopper.bmp") },
+	{ _T("ブルーハワイ"), _T("image/BlueHawaii.bmp") },
+	{ _T("ピニャコラーダ"), _T("image/PinaColada.bmp") },
+	{ _T("ピーチフィズ"), _T("image/PeachFizz.bmp") },
+	{ _T("村雨"), _T("image/Murasame.bmp") },
+	{ _T("ジンソーダ"), _T("image/GinSoda.bmp") },
+	{ _T("ジンライム"), _T("image/GinLime.bmp") },
+	{ _T("ジンリッキー"), _T("image/GinRickey.bmp") },
+	{ _T("テキーラサンライズ"), _T("image/TequilaSunrise.bmp") },
+	{ _T("ディタウーロン"), _T("image/DitaOolong.bmp") },
+	{ _T("サムライ"), _T("image/Samurai.bmp") },
+	{ _T("プレリュードフィズ"), _T("image/PreludeFizz.bmp") },
+	{ _T("ジントニック"), _T("image/GinAndTonic.bmp") },
+	{ _T("ブラッディーメアリー"), _T("image/BloodyMary.bmp") },
+	{ _T("ソルティドッグ"), _T("image/SaltyDog.bmp") },
+	{ _T("モヒート"), _T("image/Mojito.bmp") },
+	{ _T("モスコミュール"), _T("image/MoscowMule.bmp") },
+	{ _T("カンパリオレンジ"), _T("image/CampariOrange.bmp") },
+	{ _T("サラマンダー"), _T("image/Salamander.bmp") },
+	{ _T("コブラ"), _T("image/Cobra.bmp") },
+	{ _T("トマホーク"), _T("image/Tomahawk.bmp") },
+	{ _T("ホーネット"), _T("image/Hornet.bmp") },
+	{ _T("ホワイトレディ"), _T("image/WhiteLady.bmp") },
+	{ _T("スクリュードライバー"), _T("image/Screwdriver.bmp") },
+	{ _T("キューバリブレ"), _T("image/CubaLibre.bmp") },
+	{ _T("オペレーター"), _T("image/Operator.bmp") },
+	{ _T("ダイキリ"), _T("image/Daiquiri.bmp") },
+	{ _T("シンガポールスリング"), _T("image/SingaporeSling.bmp") },
+	{ _T("ジャックローズ"), _T("image/JackRose.bmp") },
+	{ _T("アプリコットフィズ"), _T("image/ApricotFizz.bmp") },
+	{ _T("サイドカー"), _T("image/Sidecar.bmp") },
+	{ _T("マンハッタン"), _T("image/Manhattan.bmp") },
+	{ _T("ギムレット"), _T("image/Gimlet.bmp") },
+	{ _T("マティーニ"), _T("image/Martini.bmp") },
+	{ _T("マルガリータ"), _T("image/Margarita.bmp") },
+	{ _T("ロングアイランドアイスティー"), _T("image/LongIslandIcedTea.bmp") },
+	{ _T("シャンディガフ"), _T("image/ShandyGaff.bmp") },
+	{ _T("レッドアイ"), _T("image/RedEye.bmp") },
+	{ _T("ラムトニック"), _T("image/RumTonic.bmp") },
+	{ _T("カンパリソーダ"), _T("image/CampariSoda.bmp") },
 	// 他のカクテルを追加...
 };
 
@@ -93,8 +144,8 @@ Cocktail GetRandomCocktail(int shakeCount) {
 // 使用例
 int shakeCount = 5; // シェイク数を指定
 Cocktail randomCocktail = GetRandomCocktail(shakeCount);
-CString name = randomCocktail.name;
-CString imagePath = randomCocktail.imagePath;
+CString kakutel_name = randomCocktail.name;
+CString kakutel_path = randomCocktail.imagePath;
 
 extern double bpm_buf[2][MAXDATASIZE];
 
@@ -502,96 +553,93 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 
 	//CClientDC myPictDC(&mPICT1); // Picture Controlに設定した変数（mPICT2）から描画用デバイスコンテキストを作る
 	//CRect myRect;
-	BITMAP bmp; // ビットマップのサイズ（幅、高さ）を調べるための変数（HBITMAPから直接得ることはできない）
-	//CString s; // System Messageに表示するための文字列用CString型オブジェクト
-	//int xsize, ysize; // 画面上への描画サイズ
+	BITMAP bmp; // ビットマップの情報を格納
+	//CRect myRect; // PictureBoxの領域を格納する変数
 
-	mPICT1.GetClientRect(myRect); // PICT2の画面上でのサイズ情報を取得する
-	xsize = myRect.Width();	// PICT2の幅
-	ysize = myRect.Height(); // PICT2の高さ
+	mPICT1.GetClientRect(myRect); // PICT1の画面サイズ取得
+	int xpictsize, ypictsize; // 画面上への描画サイズ
+	xpictsize = myRect.Width();	// PICT1の幅
+	ypictsize = myRect.Height(); // PICT1の高さ
 
 	HBITMAP hbmp = 0;
-	HDC hMdc = CreateCompatibleDC(myPictDC); // PICT2に描画するためのデバイスコンテキストを作る
+	HDC hMdc = CreateCompatibleDC(myPictDC); // メモリデバイスコンテキストを作成
 
-	// 画像の読み込み
+	// 画像読み込み処理
+	//switch (mode)
+	//{
+	//case idol:
+	/*	hbmp = (HBITMAP)LoadImage(NULL, _T("BloodyMary.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		break;
+	case shake:
+		hbmp = (HBITMAP)LoadImage(NULL, _T("image/img.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		break;
+	case result:
+		hbmp = (HBITMAP)LoadImage(NULL, _T("image/aaa.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		break;
+	}*/
+
+	
+	CString imagePath;
 	switch (mode)
 	{
 	case idol:
-		// 待機画面の画像
-		hbmp = (HBITMAP)LoadImage(NULL, _T("image/aaa.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);;
+		imagePath = _T("image/start.bmp");
 		break;
-
 	case shake:
-		// シェイクの画像
-		hbmp = (HBITMAP)LoadImage(NULL, _T("image/img.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);;
+		imagePath = _T("image/shake.bmp");
 		break;
-
 	case result:
-		// 出来上がったカクテルの画像
-		hbmp = (HBITMAP)LoadImage(NULL, _T("image/aaa.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);;
+		imagePath = kakutel_path;
 		break;
 	}
-
-	SelectObject(hMdc, hbmp);	// 画像ファイルのフォーマットを踏襲させる
-	SelectObject(myPictDC, hbmp); // 画像描画DCの属性をビットマップに対応づける
-
-	GetObject(hbmp, sizeof(BITMAP), &bmp); // HBITMAP型画像データからBITMAP型データへの読み替えを行う
-
-	SelectObject(hMdc, hbmp);	// 画像ファイルのフォーマットを踏襲させる
-	SelectObject(myPictDC, hbmp); // 画像描画DCの属性をビットマップに対応づける
-
-	GetObject(hbmp, sizeof(BITMAP), &bmp); // HBITMAP型画像データからBITMAP型データへの読み替えを行う
-
-	// Δ追記
-	// 画面モードをエディットボックスに表示
-
-	switch (mode)
-	{
-	case idol:
-		// 振る前
-
-		StretchBlt(myPictDC, xsize * 0 / 4, ysize * 0 / 4, xsize * 4 / 4, ysize * 4 / 4, hMdc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY); // サイズ合わせの上で表示する
-		//s.Format(_T("Screem Mode idol"));
-		break;
-
-	case shake:
-		// 振っている
-
-		StretchBlt(myPictDC, xsize * 1 / 4, ysize * 1 / 4, xsize * 2 / 4, ysize * 2 / 4, hMdc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY); // サイズ合わせの上で表示する
-		//s.Format(_T("Screem Mode shake"));
-		break;
-
-	case finish:
-		// 注いでいる途中の画像を表示するハズだった
-		//s.Format(_T("Screem Mode finish"));
-		break;
-
-	case result:
-		// 出来上がったカクテルの画像を真ん中にドン！
-
-		StretchBlt(myPictDC, xsize * 1 / 4, ysize * 1 / 4, xsize * 2 / 4, ysize * 2 / 4, hMdc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY); // サイズ合わせの上で表示する
-		//s.Format(_T("Screem Mode result"));
-		break;
+	if (hbmp == NULL) {
+		msgED.SetDlgItemTextW(0, _T("画像ファイルが見つかりません"));
 	}
+	// 画像読み込み処理
+	hbmp = (HBITMAP)LoadImage(NULL, imagePath, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+
+	//StretchBlt(myPictDC, 0, 0, xpictsize, ypictsize, hMdc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY); // サイズ合わせの上で表示する
+	// ビットマップ情報を取得
+	GetObject(hbmp, sizeof(BITMAP), &bmp);
+	int imgWidth = bmp.bmWidth;   // 画像の幅
+	int imgHeight = bmp.bmHeight; // 画像の高さ
+
+	//HBITMAP oldBmp = (HBITMAP)SelectObject(hMdc, hbmp); // メモリデバイスコンテキストに画像を選択
+
+	// StretchBltの描画
+	//switch (mode)
+	//{
+	//case idol:
+	//	StretchBlt(myPictDC, 0, 0, xpictsize, ypictsize, hMdc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY); // サイズ合わせの上で表示する
+	//	break;
+	//case shake:
+	//	StretchBlt(myPictDC, 0, 0, xpictsize, ypictsize, hMdc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY); // サイズ合わせの上で表示する
+	//	break;
+	//case result:
+	//	StretchBlt(myPictDC, 0, 0, xpictsize, ypictsize, hMdc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY); // サイズ合わせの上で表示する
+	//	break;
+	//}
+	//BOOL aresult = StretchBlt(myPictDC, 0, 0, xpictsize, ypictsize, hMdc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY);
+	HBITMAP oldBmp = (HBITMAP)SelectObject(hMdc, hbmp); // メモリデバイスコンテキストに画像を選択
+	StretchBlt(myPictDC, 0, 0, xpictsize, ypictsize, hMdc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY);
+	//BitBlt(myPictDC, 0, 0, xpictsize, ypictsize, hMdc, 0, 0, SRCCOPY);
 
 	s.Format(_T("Size of img.bmp : x = %d y = %d Size of Picture box : width = %d, height = %d"),
-		bmp.bmWidth, bmp.bmHeight, xsize, ysize);
-	msgED.SetWindowTextW(s);	// img.bpmのピクセル数を画面上に表示する
+		imgWidth, imgHeight, xpictsize, ypictsize);
+	msgED.SetWindowTextW(s); // 情報を表示
 
-	DeleteDC(hMdc);	// img.bmp用に作ったデバイスコンテキストを削除する
-	DeleteObject(hbmp); // img.bmp用に作ったバッファメモリ（HBITMAP型）を削除する
-
-	msgED.SetWindowTextW(s);
-
-	myPictDC.BitBlt(0, 0, xsize, ysize, &myDC, 0, 0, SRCCOPY); // バッファメモリから画面（myPictDC)にデータを転送する
-
-	myDC.SelectObject(oldPen);	// 以前のペンに戻しておく
+	// リソース解放
+	SelectObject(hMdc, oldBmp); // 古いビットマップを復元
+	//SelectObject(hMdc, hbmp);	// 画像ファイルのフォーマットを踏襲させる
+	SelectObject(myPictDC, hbmp); // 画像描画DCの属性をビットマップに対応づける
+	DeleteDC(hMdc);
+	DeleteObject(hbmp);
 
 	// Δここまで
 
 	mes_swing.Format(_T("平均時間: %lf s\r\nスコア: %lf"), swing_average * 32.0, swing_score);
 	mes_wrist.Format(_T("角度平均: %lf ?\r\nスコア: %lf"), theta_average, theta_score);
-	mes_result.Format(_T("総合スコア: %lf\r\nBPM: %lf\r\npour: %d"), whole_score, bpm_buf[0][start], pour);
+	mes_result.Format(_T("総合スコア: %lf\r\nBPM: %lf\r\npour: %d\r\nカクテル: %s"), whole_score, bpm_buf[0][start], pour, kakutel_name);
 	msgED2.SetWindowTextW(mes_wrist);
 
 	msgED3.SetWindowTextW(mes_swing);
