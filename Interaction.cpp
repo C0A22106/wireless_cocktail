@@ -410,10 +410,10 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	memBM2 = CreateCompatibleBitmap(myPictDC2, xsize2, ysize2);
 	SelectObject(myDC2, memBM2); // 画像メモリの属性をバッファメモリのデバイスコンテキストに対応づける
 
-	if (st_dev >= 200) {
+	if (st_dev >= 100) {
 		myDC2.FillSolidRect(myRect2, RGB(0, 0, 255));
 	}
-	else if (st_dev >= 100) {
+	else if (st_dev >= 50) {
 		myDC2.FillSolidRect(myRect2, RGB(255, 0, 255));
 	}
 	else if (st_dev != 0.0) {
