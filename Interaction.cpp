@@ -15,9 +15,6 @@
 #include "resource.h"
 #include <random>
 #include <mmsystem.h>
-#include <iostream>
-#include <vector>
-#include <cmath>
 
 // MFC管理下にないグローバル変数への参照
 extern int rf_status; // ワイヤレス通信の実行状況を表す変数　0 ... 実行なし	1 ... 実行あり
@@ -56,9 +53,14 @@ double sum_theta_dif = 0;
 int sample_count = 0;
 double AATL = 0;
 double BPM = 0;
-double in_pro[MAXDATASIZE];
-int shake_start, shake_end;
-double st_dev = 0.0;
+double test_score = 0.0;
+double xsum = 0.0;
+double ysum = 0.0;
+double zsum = 0.0;
+double xangsum = 0.0;
+double yangsum = 0.0;
+double xajsum = 0.0;
+CString fravor = _T("ただの") ;
 clock_t start_time, end_time;
 BOOLEAN shaking, pour, stop, sound = FALSE;
 
@@ -71,61 +73,61 @@ struct Cocktail {
 
 Cocktail kakuteru[] = {
 	{ _T("カシスオレンジ"), _T("image/CassisOrange.bmp") },
-	{ _T("ファジーネーブル"), _T("image/NoImage.bmp") },
+	{ _T("ファジーネーブル"), _T("image/FuzzyNavel.bmp") },
 	{ _T("ディタオレンジ"), _T("image/DitaOrange.bmp") },
 	{ _T("ピーチツリーフィズ"), _T("image/PeachTreeFizz.bmp") },
 	{ _T("ハリケーン"), _T("image/Hurricane.bmp") },
 	{ _T("コスモポリタン"), _T("image/Cosmopolitan.bmp") },
 	{ _T("ミモザ"), _T("image/Mimosa.bmp") },
-	{ _T("カルーアミルク"), _T("image/NoImage.bmp") },
-	{ _T("アレキサンダー"), _T("image/NoImage.bmp") },
-	{ _T("オーロラ"), _T("image/NoImage.bmp") },
-	{ _T("ニューヨーク"), _T("image/NoImage.bmp") },
-	{ _T("チャイナブルー"), _T("image/NoImage.bmp") },
-	{ _T("ピーチウーロン"), _T("image/NoImage.bmp") },
-	{ _T("ブルームーン"), _T("image/NoImage.bmp") },
-	{ _T("マリブコーク"), _T("image/NoImage.bmp") },
+	{ _T("カルーアミルク"), _T("image/KahluaMilk.bmp") },
+	{ _T("アレキサンダー"), _T("image/Alexander.bmp") },
+	{ _T("オーロラ"), _T("image/Aurora.bmp") },
+	{ _T("ニューヨーク"), _T("image/NewYork.bmp") },
+	{ _T("チャイナブルー"), _T("image/ChinaBlue.bmp") },
+	{ _T("ピーチウーロン"), _T("image/PeachOolong.bmp") },
+	{ _T("ブルームーン"), _T("image/BlueMoon.bmp") },
+	{ _T("マリブコーク"), _T("image/MalibuCoke.bmp") },
 	{ _T("キティ"), _T("image/Kitty.bmp") },
-	{ _T("グラスホッパー"), _T("image/NoImage.bmp") },
-	{ _T("ブルーハワイ"), _T("image/NoImage.bmp") },
-	{ _T("ピニャコラーダ"), _T("image/NoImage.bmp") },
+	{ _T("グラスホッパー"), _T("image/Grasshopper.bmp") },
+	{ _T("ブルーハワイ"), _T("image/BlueHawaii.bmp") },
+	{ _T("ピニャコラーダ"), _T("image/PinaColada.bmp") },
 	{ _T("ピーチフィズ"), _T("image/PeachFizz.bmp") },
 	{ _T("村雨"), _T("image/Murasame.bmp") },
-	{ _T("ジンソーダ"), _T("image/NoImage.bmp") },
-	{ _T("ジンライム"), _T("image/NoImage.bmp") },
+	{ _T("ジンソーダ"), _T("image/GinSoda.bmp") },
+	{ _T("ジンライム"), _T("image/GinLime.bmp") },
 	{ _T("ジンリッキー"), _T("image/GinRickey.bmp") },
 	{ _T("テキーラサンライズ"), _T("image/TequilaSunrise.bmp") },
 	{ _T("ディタウーロン"), _T("image/DitaOolong.bmp") },
 	{ _T("サムライ"), _T("image/Samurai.bmp") },
 	{ _T("プレリュードフィズ"), _T("image/PreludeFizz.bmp") },
-	{ _T("ジントニック"), _T("image/NoImage.bmp") },
+	{ _T("ジントニック"), _T("image/GinAndTonic.bmp") },
 	{ _T("ブラッディーメアリー"), _T("image/BloodyMary.bmp") },
 	{ _T("ソルティドッグ"), _T("image/SaltyDog.bmp") },
 	{ _T("モヒート"), _T("image/Mojito.bmp") },
-	{ _T("モスコミュール"), _T("image/NoImage.bmp") },
-	{ _T("カンパリオレンジ"), _T("image/NoImage.bmp") },
-	{ _T("サラマンダー"), _T("image/NoImage.bmp") },
-	{ _T("コブラ"), _T("image/NoImage.bmp") },
-	{ _T("トマホーク"), _T("image/NoImage.bmp") },
-	{ _T("ホーネット"), _T("image/NoImage.bmp") },
-	{ _T("ホワイトレディ"), _T("image/NoImage.bmp") },
+	{ _T("モスコミュール"), _T("image/MoscowMule.bmp") },
+	{ _T("カンパリオレンジ"), _T("image/CampariOrange.bmp") },
+	{ _T("サラマンダー"), _T("image/Salamander.bmp") },
+	{ _T("コブラ"), _T("image/Cobra.bmp") },
+	{ _T("トマホーク"), _T("image/Tomahawk.bmp") },
+	{ _T("ホーネット"), _T("image/Hornet.bmp") },
+	{ _T("ホワイトレディ"), _T("image/WhiteLady.bmp") },
 	{ _T("スクリュードライバー"), _T("image/Screwdriver.bmp") },
-	{ _T("キューバリブレ"), _T("image/NoImage.bmp") },
-	{ _T("オペレーター"), _T("image/NoImage.bmp") },
-	{ _T("ダイキリ"), _T("image/NoImage.bmp") },
-	{ _T("シンガポールスリング"), _T("image/NoImage.bmp") },
-	{ _T("ジャックローズ"), _T("image/NoImage.bmp") },
-	{ _T("アプリコットフィズ"), _T("image/NoImage.bmp") },
-	{ _T("サイドカー"), _T("image/NoImage.bmp") },
-	{ _T("マンハッタン"), _T("image/NoImage.bmp") },
+	{ _T("キューバリブレ"), _T("image/CubaLibre.bmp") },
+	{ _T("オペレーター"), _T("image/Operator.bmp") },
+	{ _T("ダイキリ"), _T("image/Daiquiri.bmp") },
+	{ _T("シンガポールスリング"), _T("image/SingaporeSling.bmp") },
+	{ _T("ジャックローズ"), _T("image/JackRose.bmp") },
+	{ _T("アプリコットフィズ"), _T("image/ApricotFizz.bmp") },
+	{ _T("サイドカー"), _T("image/Sidecar.bmp") },
+	{ _T("マンハッタン"), _T("image/Manhattan.bmp") },
 	{ _T("ギムレット"), _T("image/Gimlet.bmp") },
-	{ _T("マティーニ"), _T("image/NoImage.bmp") },
-	{ _T("マルガリータ"), _T("image/NoImage.bmp") },
-	{ _T("ロングアイランドアイスティー"), _T("image/NoImage.bmp") },
-	{ _T("シャンディガフ"), _T("image/NoImage.bmp") },
-	{ _T("レッドアイ"), _T("image/NoImage.bmp") },
-	{ _T("ラムトニック"), _T("image/NoImage.bmp") },
-	{ _T("カンパリソーダ"), _T("image/NoImage.bmp") },
+	{ _T("マティーニ"), _T("image/Martini.bmp") },
+	{ _T("マルガリータ"), _T("image/Margarita.bmp") },
+	{ _T("ロングアイランドアイスティー"), _T("image/LongIslandIcedTea.bmp") },
+	{ _T("シャンディガフ"), _T("image/ShandyGaff.bmp") },
+	{ _T("レッドアイ"), _T("image/RedEye.bmp") },
+	{ _T("ラムトニック"), _T("image/RumTonic.bmp") },
+	{ _T("カンパリソーダ"), _T("image/CampariSoda.bmp") },
 	// 他のカクテルを追加...
 };
 
@@ -157,7 +159,7 @@ extern double bpm_buf[2][MAXDATASIZE];
 
 // 注いでいることを判定する独自関数
 void jud_pour(int time) {
-	if ((stop_count >= 20) && (databuf[12][time] >= 120.0)) {
+	if ((stop_count >= 20) && (databuf[12][time] >= 120.0) && (databuf[12][time] <= 180.0)) {
 		pour = TRUE;
 	}
 }
@@ -211,35 +213,8 @@ void start_shake(int time)
 {
 	if (databuf[16][time] >= 2000)
 	{
-		shake_start = time;
 		shaking = TRUE;
 	}
-}
-
-double std_cal() {
-	if (shake_start > shake_end || shake_start < 0 || shake_end >= MAXDATASIZE) {
-		std::cerr << "Invalid range." << std::endl;
-		return -1;
-	}
-
-	//平均算出
-	double sum = 0.0;
-	int count = shake_end - shake_start + 1;
-
-	for (int i = shake_start; i <= shake_end; ++i) {
-		sum += in_pro[i];
-	}
-	double mean = sum / count;
-
-	//分散算出
-	double variance = 0.0;
-	for (int i = shake_start; i <= shake_end; ++i) {
-		variance += std::pow(in_pro[i] - mean, 2);
-	}
-	variance /= count;
-
-	// 標準偏差 = √分散
-	return std::sqrt(variance);
 }
 
 // Δここまで
@@ -410,19 +385,8 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	memBM2 = CreateCompatibleBitmap(myPictDC2, xsize2, ysize2);
 	SelectObject(myDC2, memBM2); // 画像メモリの属性をバッファメモリのデバイスコンテキストに対応づける
 
-	if (st_dev >= 100) {
-		myDC2.FillSolidRect(myRect2, RGB(0, 0, 255));
-	}
-	else if (st_dev >= 50) {
-		myDC2.FillSolidRect(myRect2, RGB(255, 0, 255));
-	}
-	else if (st_dev != 0.0) {
-		myDC2.FillSolidRect(myRect2, RGB(255, 0, 0));
-	}
-	else {
-		myDC2.FillSolidRect(myRect2, RGB(255, 255, 255)); // 矩形領域を白で塗りつぶす
-	}
-	
+
+	myDC2.FillSolidRect(myRect2, RGB(255, 255, 255)); // 矩形領域を白で塗りつぶす
 	CPen myPen2(PS_SOLID, 1, RGB(0, 0, 0)); // ペンの種類（SOLID：実線）、ペン幅（1ピクセル)、色（R, G, B)
 	CPen* oldPen2 = myDC2.SelectObject(&myPen2);	// ペンをmyPenに持ち替えると同時に、以前のペンをoldPenに記憶させる
 
@@ -486,10 +450,10 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	CString mes_wrist;
 	CString mes_result;
 	CString mes_random;
-	val = databuf[7][start];
+	val = databuf[4][start];
 
 	AATL += abs(databuf[16][start]);
-	in_pro[start] = databuf[1][start] * databuf[5][start] - databuf[2][start] * databuf[4][start]; //加速度と角速度の外積(n=3)を代入
+
 
 	//1時間単位前の手首ひねり角との差の絶対値をsum_data_difに加算する
 	double wrist_def;
@@ -542,10 +506,6 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 		// 画面をリセット
 		mPICT1.GetClientRect(myRect);	// PICT1のサイズ情報がmyRectに入る
 		myPictDC.FillSolidRect(myRect, RGB(255, 255, 255));	// myRectで示される四辺形を白で塗りつぶす
-
-		shake_end = start;
-
-		st_dev = std_cal();
 	}
 	// Δここまで
 
@@ -602,7 +562,6 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	//CClientDC myPictDC(&mPICT1); // Picture Controlに設定した変数（mPICT2）から描画用デバイスコンテキストを作る
 	//CRect myRect;
 	BITMAP bmp; // ビットマップの情報を格納
-	BITMAP bmp2;
 	//CRect myRect; // PictureBoxの領域を格納する変数
 
 	mPICT1.GetClientRect(myRect); // PICT1の画面サイズ取得
@@ -611,7 +570,6 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	ypictsize = myRect.Height(); // PICT1の高さ
 
 	HBITMAP hbmp = 0;
-	HBITMAP hbmp2 = 0;
 	HDC hMdc = CreateCompatibleDC(myPictDC); // メモリデバイスコンテキストを作成
 
 	// 画像読み込み処理
@@ -628,7 +586,7 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 		break;
 	}*/
 
-
+	
 	CString imagePath;
 	switch (mode)
 	{
@@ -636,10 +594,35 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 		imagePath = _T("image/start.bmp");
 		break;
 	case shake:
+		if (stop_count <= 5) {
+			xsum += abs(databuf[1][start]);
+			ysum += abs(databuf[2][start]);
+			zsum += abs(databuf[3][start]);
+			xangsum += abs(databuf[4][start]);
+			yangsum += abs(databuf[5][start]);
+			xajsum += abs(databuf[16][start]);
+		}
 		imagePath = _T("image/shake.bmp");
-		//in_pro[sample_count] = 
 		break;
 	case result:
+		if (xsum / ysum >=0.9) {
+			fravor = _T("おいしい");
+		}
+		else if (zsum / ysum >= 0.9) {
+			fravor = _T("塩味の");
+		}
+		else if (xangsum / ysum >= 700) {
+			fravor = _T("苦めの");
+		}
+		else if (yangsum / ysum >= 150) {
+			fravor = _T("甘い");
+		}
+		else if (xajsum <= 300000) {
+			fravor = _T("酸っぱい");
+		}
+		else {
+			fravor = _T("ただの");
+		}
 		imagePath = kakutel_path;
 		break;
 	}
@@ -648,7 +631,6 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	}
 	// 画像読み込み処理
 	hbmp = (HBITMAP)LoadImage(NULL, imagePath, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-	hbmp2 = (HBITMAP)LoadImage(NULL, _T("image/DitaOolong.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 
 	//StretchBlt(myPictDC, 0, 0, xpictsize, ypictsize, hMdc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY); // サイズ合わせの上で表示する
 	// ビットマップ情報を取得
@@ -656,9 +638,6 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	int imgWidth = bmp.bmWidth;   // 画像の幅
 	int imgHeight = bmp.bmHeight; // 画像の高さ
 
-	GetObject(hbmp2, sizeof(BITMAP), &bmp2);
-	int imgWidth2 = bmp2.bmWidth;
-	int imgHeight2 = bmp2.bmHeight;
 	//HBITMAP oldBmp = (HBITMAP)SelectObject(hMdc, hbmp); // メモリデバイスコンテキストに画像を選択
 
 	// StretchBltの描画
@@ -679,9 +658,6 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 	StretchBlt(myPictDC, 0, 0, xpictsize, ypictsize, hMdc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY);
 	//BitBlt(myPictDC, 0, 0, xpictsize, ypictsize, hMdc, 0, 0, SRCCOPY);
 
-	//oldBmp = (HBITMAP)SelectObject(hMdc, hbmp2);
-	//StretchBlt(myPictDC, 0, 0, xpictsize, ypictsize, hMdc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY);
-
 	s.Format(_T("Size of img.bmp : x = %d y = %d Size of Picture box : width = %d, height = %d"),
 		imgWidth, imgHeight, xpictsize, ypictsize);
 	msgED.SetWindowTextW(s); // 情報を表示
@@ -697,7 +673,9 @@ LRESULT CWirelessMotionDlg::OnMessageRCV(WPARAM wParam, LPARAM lParam)
 
 	mes_swing.Format(_T("平均時間: %lf s\r\nスコア: %lf"), swing_average * 32.0, swing_score);
 	mes_wrist.Format(_T("角度平均: %lf ?\r\nスコア: %lf"), theta_average, theta_score);
-	mes_result.Format(_T("総合スコア: %lf\r\nstd: %lf\r\npour: %d\r\nカクテル: %s"), whole_score, st_dev, pour, kakutel_name);
+	if (mode == result) {
+		mes_result.Format(_T("総合スコア: %lf\r\nBPM: %lf\r\npour: %d\r\nカクテル: %s%s"), whole_score, bpm_buf[0][start], pour, fravor, kakutel_name);
+	}
 	msgED2.SetWindowTextW(mes_wrist);
 
 	msgED3.SetWindowTextW(mes_swing);
